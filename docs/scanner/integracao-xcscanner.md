@@ -27,6 +27,23 @@ Esses valores são **ponto de partida**, não constantes a codificar sem teste. 
 
 Fonte: [manual Barcode Utility, seções Function Settings e Settings broadcast options](https://movfast.com.br/hubfs/Manual%20Barcode%20Utility%20Rev.01.pdf?hsLang=pt-br).
 
+## Configuração confirmada em R2N-LAB-01
+
+Em 2026-09-01, a unidade de laboratório confirmou leitura de Code 128, EAN-13 e QR Code no Scan Demo. A configuração observada, sem alteração, foi:
+
+| Campo | Valor observado | Implicação |
+| --- | --- | --- |
+| Scan mode | `Single Scan` | adequado ao checkout; uma tentativa por acionamento |
+| Barcode data output mode | `Output to broadcast/focus` | priorizar receptor de broadcast no app de diagnóstico |
+| Charset | UTF-8 | preservar como padrão do adaptador |
+| Prefixos | vazios | o código chegará sem prefixo configurado |
+| Suffix 1 | `ENTER` | observar se o foco também recebe Enter; não depender dele no broadcast |
+| MultiBarcodes | 1 | adequado; cada bip representa uma leitura |
+| White list | habilitada | possível bloqueio ao novo app; inspecionar lista antes de implementar |
+| Pass Scan Key Value | desabilitado | o app não deve depender de evento da tecla física |
+
+Os campos de ação/chave de broadcast estavam acessíveis na interface, porém seus valores não foram exibidos nas fotos. Eles permanecem pendentes de leitura direta. Não substituir por valores publicados sem antes conferir a configuração real.
+
 ## Uso planejado do SDK
 
 Não baixar nem embutir o SDK ainda. Na prova de leitura, consultar no aparelho a versão do serviço e, se necessário, comparar com a documentação. O guia descreve:

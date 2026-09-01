@@ -24,7 +24,8 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 ╭─ FASE 2 — Descoberta controlada do aparelho ─╮
 │ 🔄 doing · 🔴 VOCÊ ESTÁ AQUI │
 │ ✅ done · Registrar Android, firmware e Barcode Utility. │
-│ ⏳ pending · Validar Scan Demo com EAN-13 e QR Code de teste. │
+│ ✅ done · Validar Scan Demo com Code 128, EAN-13 e QR Code. │
+│ 🔄 doing · Inspecionar White list e ação/chave de broadcast. │
 │ ⏳ pending · Habilitar depuração USB e confirmar conexão ADB. │
 ╰────────────────────────────────────────────────╯
 
@@ -52,7 +53,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ⏳ pending · Autorizar explicitamente qualquer conexão externa. │
 ╰────────────────────────────────────────────────────╯
 
-[██████░░░░░░░░] ~40%
+[███████░░░░░░░] ~50%
 
 ## Sequência detalhada
 
@@ -132,6 +133,7 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 | --- | --- | --- | --- | --- | --- | --- |
 | 2026-09-01 | 1 | Repositório e wiki inicial publicados. | Fontes do R2N, Barcode Utility e XCScanner SDK registradas. | Teste no aparelho ainda não realizado. | `README.md`, `docs/**`, `CONTRIBUTING.md` | Iniciar descoberta controlada do Ranger. |
 | 2026-09-01 | 2 | Inventário visual da unidade concluído, sem mudar configurações. | Ranger 2(N), Android 13, build `T2351_MOVFAST_20260204`, Barcode Utility 1.3.62.1.4 e serviço 2.0.8.1211. | Falta Scan Demo, configuração de saída e ADB. | `collector/ranger-2n.md`, `collector/SESSAO_DESCOBERTA_2026-09-01.md`, este plano. | Validar leitura no Scan Demo. |
+| 2026-09-01 | 2 | Scan Demo e Function settings inspecionados sem alterações. | Leitura de Code 128, EAN-13 e QR; modo `broadcast/focus`, UTF-8, Single Scan e MultiBarcodes 1. | White list está ativa; ação/chave de broadcast e ADB pendentes. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, `scanner/integracao-xcscanner.md`, este plano. | Inspecionar White list e valores de broadcast. |
 
 ## Regras de avanço
 
