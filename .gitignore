@@ -1,0 +1,20 @@
+# Android/Gradle
+.gradle/
+**/build/
+local.properties
+*.iml
+.idea/
+
+# Dispositivos, configurações locais e segredos
+*.apk
+*.aab
+*.keystore
+*.jks
+*.p12
+*.pfx
+.env
+device-notes-private/
+scanner-export-private/
+
+# Sistema operacional
+.DS_Store
