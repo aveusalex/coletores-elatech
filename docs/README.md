@@ -4,7 +4,8 @@
 
 | Tema | Documento | Estado |
 | --- | --- | --- |
-| Equipamento | [Ranger 2N](collector/ranger-2n.md) | fonte pública confirmada; unidade física pendente |
+| Equipamento | [Ranger 2N](collector/ranger-2n.md) | fonte e inventário da unidade confirmados |
+| Sessões no aparelho | [Descoberta de 2026-09-01](collector/SESSAO_DESCOBERTA_2026-09-01.md) | inventário inicial concluído |
 | Leitor 1D/2D | [Integração XCScanner](scanner/integracao-xcscanner.md) | fonte documental confirmada; teste físico pendente |
 | Computador e implantação | [Conectar e instalar](development/conectar-e-instalar.md) | procedimento documentado; não executado |
 | Arquitetura | [Visão geral](architecture/visao-geral.md) | decisão inicial |

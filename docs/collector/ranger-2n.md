@@ -28,14 +28,19 @@ Preencher somente durante a sessão física, sem serial completo nem IMEI:
 
 | Campo | Valor |
 | --- | --- |
-| Identificador interno do aparelho | PENDENTE |
-| Android / número de versão | PENDENTE |
-| Patch de segurança | PENDENTE |
-| Firmware/build | PENDENTE |
-| Barcode Utility: versão | PENDENTE |
-| Serviço XCScanner: versão | PENDENTE |
-| Scanner detectado (E4/E5/outro) | PENDENTE |
-| Data e responsável pelo teste | PENDENTE |
+| Identificador interno do aparelho | `R2N-LAB-01` (apelido criado para o laboratório) |
+| Android / número de versão | Android 13 |
+| Patch de segurança | 2023-09-05 |
+| Atualização do sistema Google Play | 2024-10-01 |
+| Firmware/build | `T2351_MOVFAST_20260204`; firmware 1.0.0 |
+| Kernel | 4.19.191, compilado em 2026-02-04 (conforme tela) |
+| Barcode Utility: versão | 1.3.62.1.4 |
+| Decoder | H2.0.8 |
+| Serviço de scanner | 2.0.8.1211 |
+| Scanner detectado (E4/E5/outro) | PENDENTE: a tela informa decoder, não o modelo físico do módulo |
+| Data e responsável pelo teste | 2026-09-01; evidência visual encaminhada pelo usuário |
+
+As imagens originais também mostravam IMEI e endereço MAC. Esses identificadores não foram copiados para o repositório nem para esta documentação.
 
 ## O que não fazer nesta fase
 
