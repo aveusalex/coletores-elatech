@@ -9,6 +9,7 @@
 | Computador e implantação | [Conectar e instalar](development/conectar-e-instalar.md) | procedimento documentado; não executado |
 | Arquitetura | [Visão geral](architecture/visao-geral.md) | decisão inicial |
 | Decisões | [ADR 0001](adr/0001-offline-first-e-fronteira-de-middleware.md) | aceita para o laboratório |
+| Continuidade | [Plano contínuo e dump de contexto](PLANO_CONTINUO.md) | fonte de verdade operacional |
 
 ## Convenções de evidência
 

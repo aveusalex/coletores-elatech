@@ -18,6 +18,7 @@ O primeiro laboratório é um checkout móvel didático no **MovFast Ranger 2N**
 - [Integração com o scanner e SDK](docs/scanner/integracao-xcscanner.md)
 - [Preparação do computador e instalação de app](docs/development/conectar-e-instalar.md)
 - [Arquitetura evolutiva: app offline até middleware](docs/architecture/visao-geral.md)
+- [Plano contínuo e dump de contexto](docs/PLANO_CONTINUO.md)
 
 ## Princípios de segurança e escopo
 

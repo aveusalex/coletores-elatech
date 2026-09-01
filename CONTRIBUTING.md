@@ -11,6 +11,7 @@ Ao descobrir, testar ou alterar algo, inclua na mesma mudança:
 3. Status: **fato confirmado**, **hipótese** ou **pendência**.
 4. Reversão, se a alteração tiver mudado uma configuração do coletor.
 5. Link para o documento do assunto no índice de `docs/`.
+6. Atualização do [plano contínuo](docs/PLANO_CONTINUO.md) quando houver troca de fase, novo bloqueio, decisão ou próximo passo.
 
 ## Registro do aparelho
 
