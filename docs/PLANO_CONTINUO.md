@@ -31,8 +31,8 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 ╰────────────────────────────────────────────────╯
 
 ╭─ FASE 3 — Prova de integração do scanner ─╮
-│ 🔄 doing · 🔴 VOCÊ ESTÁ AQUI · Instalar app Android mínimo de diagnóstico. │
-│ ✅ done · Criar e compilar APK de diagnóstico sem SDK proprietário. │
+│ 🔄 doing · 🔴 VOCÊ ESTÁ AQUI · Autorizar permissão e testar o primeiro bip. │
+│ ✅ done · Criar, compilar, instalar e abrir app de diagnóstico. │
 │ ⏳ pending · Receber um evento por bip via broadcast. │
 │ ⏳ pending · Comparar serviço/SDK e decidir se SDK será usado. │
 ╰───────────────────────────────────────────────╯
@@ -55,7 +55,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ⏳ pending · Autorizar explicitamente qualquer conexão externa. │
 ╰────────────────────────────────────────────────────╯
 
-[█████████░░░░░] ~65%
+[██████████░░░░] ~68%
 
 ## Sequência detalhada
 
@@ -139,6 +139,7 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 | 2026-09-01 | 2 | Contrato de broadcast registrado sem salvar alterações no aparelho. | Ação `android.intent.scanResult`, chave `scanKey`, permissão `android.permission.CAMERA`, destino `com.android.scantest` / `ScanTestActivity`; White list é apenas chave nesta tela. | Validar por ADB a identidade/entrega e criar receiver próprio antes de trocar o destino. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, `scanner/integracao-xcscanner.md`, este plano. | Habilitar ADB e instalar app de diagnóstico. |
 | 2026-09-01 | 2 | ADB autorizado e inventário técnico complementar lido. | Ranger visível por USB; API 33, `arm64-v8a`; `com.android.scantest` não está instalado; serviços `datawedge` 1.2.9 e `scanner4710` 1.1.0 presentes. | Falta aplicativo próprio e prova de entrega do bip. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, `scanner/integracao-xcscanner.md`, este plano. | Criar e instalar app de diagnóstico. |
 | 2026-09-01 | 3 | App de diagnóstico criado e APK de debug compilado localmente. | Application ID `br.com.elatech.checkoutlab`; receiver `ScanResultReceiver`; build `assembleDebug` concluído. | Instalação no Ranger e alteração autorizada do destino no Barcode Utility. | `apps/handheld-checkout/**`, `development/conectar-e-instalar.md`, este plano. | Autorizar instalação do APK. |
+| 2026-09-01 | 3 | APK de diagnóstico instalado e aberto via ADB. | Instalação retornou `Success`; pacote `br.com.elatech.checkoutlab` presente e atividade inicial iniciada. | Usuário deve conceder permissão exibida pelo app; depois, alterar com autorização o destino do Barcode Utility e testar o bip. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, `development/conectar-e-instalar.md`, este plano. | Conceder permissão no app. |
 
 ## Regras de avanço
 
@@ -149,5 +150,5 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 
 ## O que destrava AGORA
 
-- Autorizar a instalação do APK de diagnóstico no Ranger conectado.
-- Alterar o destino no Barcode Utility somente depois de o app estar instalado e com autorização explícita.
+- No Checkout Lab do Ranger, tocar em **Autorizar permissão do broadcast** e aceitar o aviso Android.
+- Depois, autorizar a alteração do destino no Barcode Utility para o receiver do app.

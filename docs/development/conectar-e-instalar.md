@@ -49,6 +49,8 @@ adb shell pm path br.com.elatech.checkoutlab
 
 Antes de qualquer bip de teste, abrir o app e conceder a permissão que ele solicita. Ela corresponde à permissão configurada no broadcast do Barcode Utility; o aplicativo não abre nem utiliza a câmera.
 
+Em 2026-09-01, a instalação desse APK retornou `Success`, o pacote foi encontrado pelo ADB e a atividade inicial foi aberta no Ranger. A próxima prova ainda depende de o usuário conceder essa permissão e autorizar a troca do destino do broadcast para o receiver do Checkout Lab.
+
 ## Critérios de sucesso
 
 - O aparelho aparece como autorizado, não apenas conectado.

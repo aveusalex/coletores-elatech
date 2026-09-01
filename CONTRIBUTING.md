@@ -13,6 +13,10 @@ Ao descobrir, testar ou alterar algo, inclua na mesma mudança:
 5. Link para o documento do assunto no índice de `docs/`.
 6. Atualização do [plano contínuo](docs/PLANO_CONTINUO.md) quando houver troca de fase, novo bloqueio, decisão ou próximo passo.
 
+## Regra de versionamento e publicação
+
+Toda entrega estável — código, documento, evidência tratada ou alteração de procedimento — deve seguir a sequência **validar → commit → push para `main`** antes de ser considerada concluída. Exceções temporárias (por exemplo, uma investigação ainda em andamento) devem ser declaradas no plano contínuo; não deixar conhecimento relevante somente na conversa local.
+
 ## Registro do aparelho
 
 Não publicar serial completo, IMEI, IMSI, número de telefone, Wi-Fi, credenciais ou dados de clientes. Para cada sessão, registrar apenas os campos do [modelo de evidência](docs/collector/ranger-2n.md#registro-da-unidade-de-teste).

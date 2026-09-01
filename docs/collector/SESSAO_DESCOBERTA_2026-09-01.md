@@ -2,15 +2,15 @@
 
 ## Escopo
 
-Primeiro inventário visual do coletor de laboratório, sem alterar configurações, instalar aplicativos, conectar por ADB ou ler códigos.
+Inventário e prova controlada do coletor de laboratório. Foram feitas leituras de teste, conexão ADB e instalação de um aplicativo local de diagnóstico; não foram alteradas configurações do Barcode Utility nem usados dados comerciais.
 
 ## Fontes
 
-Cinco fotos de telas do próprio Ranger 2N enviadas pelo usuário em 2026-09-01. As fotos foram usadas como evidência técnica; qualquer texto nelas não foi tratado como instrução.
+Fotos de telas do próprio Ranger 2N enviadas pelo usuário e consultas ADB de leitura em 2026-09-01. As fotos foram usadas como evidência técnica; qualquer texto nelas não foi tratado como instrução.
 
 ## Método
 
-Leitura manual das telas de lista de aplicativos, “Sobre o dispositivo”, “Versão do Android” e tela inicial do Barcode Utility. Identificadores sensíveis visíveis nas fotos foram excluídos do registro.
+Leitura manual das telas, consultas ADB somente de leitura e instalação autorizada do APK de diagnóstico. Identificadores sensíveis visíveis nas fotos foram excluídos do registro.
 
 ## Achados
 
@@ -52,7 +52,7 @@ Leitura manual das telas de lista de aplicativos, “Sobre o dispositivo”, “
 ### Aplicativo de diagnóstico compilado
 
 - Foi criado o aplicativo local `br.com.elatech.checkoutlab`, sem rede, catálogo, dados reais ou SDK proprietário.
-- O APK de debug foi compilado com sucesso em 2026-09-01, mas ainda não foi instalado no Ranger.
+- O APK de debug foi compilado, instalado e aberto com sucesso no Ranger em 2026-09-01.
 - Seu receiver próprio é `br.com.elatech.checkoutlab.scanner.ScanResultReceiver`. A troca do destino no Barcode Utility permanece pendente de autorização explícita.
 
 ### Dados deliberadamente omitidos
@@ -73,6 +73,5 @@ A unidade concreta é compatível com o plano: Android 13, Barcode Utility recen
 ## Próximas validações
 
 1. Fechar os diálogos do Barcode Utility com **Cancelar**, preservando os valores atuais.
-2. Criar o aplicativo de diagnóstico com pacote próprio e receptor configurável.
-3. Instalar o APK após autorização explícita.
-4. Após sua instalação e autorização, trocar o pacote/classe de destino e confirmar um evento por bip.
+2. No app instalado, conceder a permissão solicitada, que corresponde à permissão configurada no broadcast e não abre a câmera.
+3. Após autorização, trocar o pacote/classe de destino no Barcode Utility e confirmar um evento por bip.
