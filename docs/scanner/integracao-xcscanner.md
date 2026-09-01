@@ -39,10 +39,15 @@ Em 2026-09-01, a unidade de laboratório confirmou leitura de Code 128, EAN-13 e
 | Prefixos | vazios | o código chegará sem prefixo configurado |
 | Suffix 1 | `ENTER` | observar se o foco também recebe Enter; não depender dele no broadcast |
 | MultiBarcodes | 1 | adequado; cada bip representa uma leitura |
-| White list | habilitada | possível bloqueio ao novo app; inspecionar lista antes de implementar |
+| White list | habilitada; tocar no item não abre lista | nesta versão é uma chave; efeito funcional ainda precisa de prova |
 | Pass Scan Key Value | desabilitado | o app não deve depender de evento da tecla física |
+| Scan Result Action | `android.intent.scanResult` | filtro de intent a usar no receptor de diagnóstico |
+| Scan Result Data Key | `scanKey` | extra que contém o código lido, a validar em execução |
+| Scan Result Permission | `android.permission.CAMERA` | validar se o manifesto do app precisa declarar essa permissão para receber o evento |
+| Broadcast Receiver PackageName | `com.android.scantest` | destino explícito atual; não é o nosso futuro aplicativo |
+| Broadcast Receiver ClassName | `ScanTestActivity` | classe alvo atual; trocar somente após existir receiver próprio e haver autorização |
 
-Os campos de ação/chave de broadcast estavam acessíveis na interface, porém seus valores não foram exibidos nas fotos. Eles permanecem pendentes de leitura direta. Não substituir por valores publicados sem antes conferir a configuração real.
+Os valores acima foram lidos diretamente da interface em 2026-09-01, sem serem alterados. Eles substituem, para esta unidade, os valores genéricos do manual. O par `com.android.scantest` / `ScanTestActivity` aparenta ser o destino de um aplicativo de demonstração do fornecedor — hipótese a confirmar por ADB. Não reutilizar esse identificador: o app de diagnóstico terá pacote e receiver próprios. Depois de instalado, a troca do destino será uma alteração controlada, registrada e feita somente com autorização.
 
 ## Uso planejado do SDK
 
@@ -60,8 +65,8 @@ Quando o SDK for adotado, fixar o commit/release exato, registrar procedência e
 
 1. Abrir Barcode Utility e usar **Scan Demo** com um EAN-13 e um QR Code conhecidos.
 2. Registrar versão do Barcode Utility, serviço e firmware.
-3. Configurar saída broadcast sem alterar outras configurações desnecessárias.
-4. Executar um app de diagnóstico que registra somente o conteúdo recebido, tipo de código e horário.
+3. Preservar a configuração atual até haver aplicativo próprio instalado; não modificar a saída apenas para testar menus.
+4. Executar um app de diagnóstico com pacote/receiver próprios, que registra somente o conteúdo recebido, tipo de código e horário.
 5. Confirmar uma entrega por bip; bloquear/desbloquear e reiniciar o coletor; repetir.
 6. Exportar a configuração, revisá-la e guardar em local privado caso contenha dados do ambiente.
 

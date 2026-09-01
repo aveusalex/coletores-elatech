@@ -34,8 +34,14 @@ Leitura manual das telas de lista de aplicativos, “Sobre o dispositivo”, “
 - ECI handling está habilitado. Leitura abaixo de 5% de bateria está desabilitada.
 - A mira liga durante a leitura; iluminação e strobo estão habilitados.
 - `Pass Scan Key Value` está desabilitado.
-- **White list está habilitada.** Ainda não foi aberto o conteúdo da lista; ela pode restringir quais aplicativos recebem ou acionam a leitura.
-- Ações/campos de broadcast estavam visíveis, mas os valores de Scan Result Action, Scan Result Data Key, Permission, PackageName e ClassName não aparecem nas imagens. Não foram inferidos nem alterados.
+- **White list está habilitada.** Tocar no item não abre tela, diálogo ou lista. Nesta versão do Barcode Utility ela se comporta como uma chave liga/desliga; seu efeito exato permanece não confirmado.
+- Contrato de broadcast efetivamente exibido, sem alteração:
+  - ação: `android.intent.scanResult`;
+  - chave de dados: `scanKey`;
+  - permissão: `android.permission.CAMERA`;
+  - pacote de destino: `com.android.scantest`;
+  - classe de destino: `ScanTestActivity`.
+- O pacote/classe configurados apontam para um aplicativo já presente no equipamento. A hipótese mais provável é que seja o aplicativo de demonstração do fornecedor; essa identidade ainda não foi verificada por ADB. Portanto, a configuração atual não está destinada ao nosso futuro aplicativo.
 
 ### Dados deliberadamente omitidos
 
@@ -44,14 +50,16 @@ IMEIs, MAC do Wi-Fi e demais identificadores únicos não foram registrados no r
 ## Limitações
 
 - Ainda não sabemos o modelo físico do módulo de leitura (E4, E5 ou outro); “H2.0.8” é a versão do decoder, não prova do módulo.
-- A ação/chave de broadcast e o conteúdo da White list ainda não foram observados.
+- O efeito funcional da White list ainda não foi comprovado; a interface não expõe uma lista editável.
+- Ainda não sabemos se a permissão de broadcast configurada exigirá declaração específica no manifesto do aplicativo de teste; isso será validado na prova de integração.
 - Não foi feita conexão ADB.
 
 ## Interpretação provisória
 
-A unidade concreta é compatível com o plano: Android 13, Barcode Utility recente, serviço de scanner exposto e prova de leitura em três simbologias. A saída `broadcast/focus` confirma que um receptor Android é uma rota aplicável. A versão do Barcode Utility é mais nova que a referenciada no manual anteriormente consultado, reforçando que valores de broadcast e comportamento devem ser validados nesta unidade, não apenas copiados de documentação anterior. A White list precisa ser entendida antes de criarmos o app, pois pode bloquear a entrega da leitura ao novo pacote.
+A unidade concreta é compatível com o plano: Android 13, Barcode Utility recente, serviço de scanner exposto e prova de leitura em três simbologias. A saída `broadcast/focus` confirma que um receptor Android é uma rota aplicável. Nesta unidade, a configuração real diverge dos valores genéricos publicados no manual, portanto ela prevalece sobre a documentação de referência. A White list não oferece uma tela de cadastro nesta interface; o bloqueio prático atual é o destino explícito `com.android.scantest` / `ScanTestActivity`. Quando existir nosso aplicativo de diagnóstico, a configuração deverá ser mudada de modo controlado e autorizado para seu próprio pacote e receiver — nunca reutilizando o pacote de demonstração.
 
 ## Próximas validações
 
-1. Abrir, sem alterar, White list e os campos Scan Result Action e Scan Result Data Key; registrar seus valores.
+1. Fechar os diálogos do Barcode Utility com **Cancelar**, preservando os valores atuais.
 2. Habilitar modo desenvolvedor e depuração USB apenas para o computador do laboratório; validar conexão ADB.
+3. Criar o aplicativo de diagnóstico com pacote próprio e receptor configurável; só após sua instalação e autorização, trocar o pacote/classe de destino e confirmar um evento por bip.
