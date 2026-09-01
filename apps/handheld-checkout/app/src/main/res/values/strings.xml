@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Checkout Lab</string>
+    <string name="title">Diagnóstico do scanner</string>
+    <string name="subtitle">Este app não consulta produtos, não usa internet e não processa vendas.</string>
+    <string name="contract">Ação: android.intent.scanResult\nChave: scanKey\nReceiver: ScanResultReceiver</string>
+    <string name="permission_granted">Permissão configurada no broadcast: concedida</string>
+    <string name="permission_pending">Permissão configurada no broadcast: pendente</string>
+    <string name="request_permission">Autorizar permissão do broadcast</string>
+    <string name="last_reading_label">Última leitura recebida</string>
+    <string name="no_reading_yet">Nenhum evento recebido ainda.</string>
+    <string name="empty_value">(valor vazio)</string>
+    <string name="last_reading_template">Código: %1$s\nHora: %2$s\nAção: %3$s</string>
+    <string name="refresh">Atualizar tela</string>
+</resources>

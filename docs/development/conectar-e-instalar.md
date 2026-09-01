@@ -29,6 +29,26 @@ adb -d install caminho/para/app-debug.apk
 
 O segundo comando é referência para a fase de implementação; não deve ser usado antes de haver um APK próprio e validado. Fonte: [Android Debug Bridge](https://developer.android.com/tools/adb).
 
+## Procedimento validado para o Checkout Lab
+
+Em 2026-09-01, este Mac reconheceu o Ranger autorizado por USB. O projeto de diagnóstico foi compilado com JDK 17, Gradle Wrapper 8.7 e Android SDK local. Para repetir a compilação:
+
+```text
+cd apps/handheld-checkout
+JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home \
+ANDROID_HOME=/Users/alexecheverria/Library/Android/sdk \
+./gradlew assembleDebug --no-daemon
+```
+
+O APK resultante é `app/build/outputs/apk/debug/app-debug.apk`. Depois de autorização explícita para instalar no aparelho conectado:
+
+```text
+adb -d install -r app/build/outputs/apk/debug/app-debug.apk
+adb shell pm path br.com.elatech.checkoutlab
+```
+
+Antes de qualquer bip de teste, abrir o app e conceder a permissão que ele solicita. Ela corresponde à permissão configurada no broadcast do Barcode Utility; o aplicativo não abre nem utiliza a câmera.
+
 ## Critérios de sucesso
 
 - O aparelho aparece como autorizado, não apenas conectado.

@@ -44,10 +44,10 @@ Em 2026-09-01, a unidade de laboratório confirmou leitura de Code 128, EAN-13 e
 | Scan Result Action | `android.intent.scanResult` | filtro de intent a usar no receptor de diagnóstico |
 | Scan Result Data Key | `scanKey` | extra que contém o código lido, a validar em execução |
 | Scan Result Permission | `android.permission.CAMERA` | validar se o manifesto do app precisa declarar essa permissão para receber o evento |
-| Broadcast Receiver PackageName | `com.android.scantest` | destino explícito atual; não é o nosso futuro aplicativo |
-| Broadcast Receiver ClassName | `ScanTestActivity` | classe alvo atual; trocar somente após existir receiver próprio e haver autorização |
+| Broadcast Receiver PackageName | `com.android.scantest` | pacote não instalado, confirmado por ADB; destino atual é inativo |
+| Broadcast Receiver ClassName | `ScanTestActivity` | classe sem pacote correspondente; trocar somente após existir receiver próprio e haver autorização |
 
-Os valores acima foram lidos diretamente da interface em 2026-09-01, sem serem alterados. Eles substituem, para esta unidade, os valores genéricos do manual. O par `com.android.scantest` / `ScanTestActivity` aparenta ser o destino de um aplicativo de demonstração do fornecedor — hipótese a confirmar por ADB. Não reutilizar esse identificador: o app de diagnóstico terá pacote e receiver próprios. Depois de instalado, a troca do destino será uma alteração controlada, registrada e feita somente com autorização.
+Os valores acima foram lidos diretamente da interface em 2026-09-01, sem serem alterados. Eles substituem, para esta unidade, os valores genéricos do manual. ADB confirmou que `com.android.scantest` não está instalado, logo o destino atual é inativo. Não reutilizar esse identificador: o app de diagnóstico terá pacote e receiver próprios. Depois de instalado, a troca do destino será uma alteração controlada, registrada e feita somente com autorização.
 
 ## Uso planejado do SDK
 

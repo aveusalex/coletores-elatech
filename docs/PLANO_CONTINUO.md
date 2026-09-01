@@ -9,7 +9,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 ## Estado atual — 2026-09-01
 
 - **Fatos confirmados na fonte:** Ranger 2N é Android; Barcode Utility suporta broadcast; XCScanner SDK possui documentação e fonte pública no ecossistema MovFast/MERTECH.
-- **Ainda não confirmado no aparelho:** variante física do scanner, efeito funcional da White list, necessidade da permissão de broadcast no manifesto e conexão ADB.
+- **Ainda não confirmado no aparelho:** variante física do scanner, efeito funcional da White list, necessidade da permissão de broadcast no manifesto e entrega da leitura ao nosso aplicativo.
 - **O que existe no repositório:** wiki técnica, arquitetura, ADR e convenções de documentação.
 - **O que não existe:** aplicativo, APK, dados reais, conexão com Clip Store/ERP, pagamento ou infraestrutura de middleware.
 
@@ -27,11 +27,12 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ✅ done · Validar Scan Demo com Code 128, EAN-13 e QR Code. │
 │ ✅ done · Registrar ação/chave/permissão e destino do broadcast. │
 │ ✅ done · Verificar que White list é somente chave nesta interface. │
-│ 🔄 doing · Habilitar depuração USB e confirmar conexão ADB. │
+│ ✅ done · Habilitar depuração USB e confirmar conexão ADB. │
 ╰────────────────────────────────────────────────╯
 
 ╭─ FASE 3 — Prova de integração do scanner ─╮
-│ ⏳ pending · Criar app Android mínimo de diagnóstico. │
+│ 🔄 doing · 🔴 VOCÊ ESTÁ AQUI · Instalar app Android mínimo de diagnóstico. │
+│ ✅ done · Criar e compilar APK de diagnóstico sem SDK proprietário. │
 │ ⏳ pending · Receber um evento por bip via broadcast. │
 │ ⏳ pending · Comparar serviço/SDK e decidir se SDK será usado. │
 ╰───────────────────────────────────────────────╯
@@ -54,7 +55,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ⏳ pending · Autorizar explicitamente qualquer conexão externa. │
 ╰────────────────────────────────────────────────────╯
 
-[████████░░░░░░] ~55%
+[█████████░░░░░] ~65%
 
 ## Sequência detalhada
 
@@ -136,6 +137,8 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 | 2026-09-01 | 2 | Inventário visual da unidade concluído, sem mudar configurações. | Ranger 2(N), Android 13, build `T2351_MOVFAST_20260204`, Barcode Utility 1.3.62.1.4 e serviço 2.0.8.1211. | Falta Scan Demo, configuração de saída e ADB. | `collector/ranger-2n.md`, `collector/SESSAO_DESCOBERTA_2026-09-01.md`, este plano. | Validar leitura no Scan Demo. |
 | 2026-09-01 | 2 | Scan Demo e Function settings inspecionados sem alterações. | Leitura de Code 128, EAN-13 e QR; modo `broadcast/focus`, UTF-8, Single Scan e MultiBarcodes 1. | White list está ativa; ação/chave de broadcast e ADB pendentes. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, `scanner/integracao-xcscanner.md`, este plano. | Inspecionar White list e valores de broadcast. |
 | 2026-09-01 | 2 | Contrato de broadcast registrado sem salvar alterações no aparelho. | Ação `android.intent.scanResult`, chave `scanKey`, permissão `android.permission.CAMERA`, destino `com.android.scantest` / `ScanTestActivity`; White list é apenas chave nesta tela. | Validar por ADB a identidade/entrega e criar receiver próprio antes de trocar o destino. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, `scanner/integracao-xcscanner.md`, este plano. | Habilitar ADB e instalar app de diagnóstico. |
+| 2026-09-01 | 2 | ADB autorizado e inventário técnico complementar lido. | Ranger visível por USB; API 33, `arm64-v8a`; `com.android.scantest` não está instalado; serviços `datawedge` 1.2.9 e `scanner4710` 1.1.0 presentes. | Falta aplicativo próprio e prova de entrega do bip. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, `scanner/integracao-xcscanner.md`, este plano. | Criar e instalar app de diagnóstico. |
+| 2026-09-01 | 3 | App de diagnóstico criado e APK de debug compilado localmente. | Application ID `br.com.elatech.checkoutlab`; receiver `ScanResultReceiver`; build `assembleDebug` concluído. | Instalação no Ranger e alteração autorizada do destino no Barcode Utility. | `apps/handheld-checkout/**`, `development/conectar-e-instalar.md`, este plano. | Autorizar instalação do APK. |
 
 ## Regras de avanço
 
@@ -146,6 +149,5 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 
 ## O que destrava AGORA
 
-- Fechar os diálogos abertos com **Cancelar** para manter a configuração observada.
-- Ligar o Ranger 2N e disponibilizá-lo com cabo USB-C de dados.
-- Habilitar e autorizar Depuração USB para o computador do laboratório.
+- Autorizar a instalação do APK de diagnóstico no Ranger conectado.
+- Alterar o destino no Barcode Utility somente depois de o app estar instalado e com autorização explícita.
