@@ -22,8 +22,8 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 ╰─────────────────────────────────────────────╯
 
 ╭─ FASE 2 — Descoberta controlada do aparelho ─╮
-│ ⏸️ paused · 🔴 VOCÊ ESTÁ AQUI │
-│ ⏳ pending · Registrar Android, firmware e Barcode Utility. │
+│ 🔄 doing · 🔴 VOCÊ ESTÁ AQUI │
+│ 🔄 doing · Registrar Android, firmware e Barcode Utility. │
 │ ⏳ pending · Validar Scan Demo com EAN-13 e QR Code de teste. │
 │ ⏳ pending · Habilitar depuração USB e confirmar conexão ADB. │
 ╰────────────────────────────────────────────────╯
