@@ -1,6 +1,8 @@
 package br.com.elatech.checkoutlab.scanner
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.xcheng.scanner.BarcodeType
 import com.xcheng.scanner.NotificationType
@@ -13,12 +15,12 @@ import com.xcheng.scanner.XcBarcodeScanner
  * ver `app/libs/PROVENANCE.md`). Recebe leitura por callback e **aplica**
  * [ScannerConfig] no serviço (device-global — ver ADR 0002).
  *
- * `init`/`deInit` fazem bind/unbind do serviço AIDL. O callback pode vir em
- * thread de binder; quem consome deve marshalizar para a UI (as Activities já
- * usam `runOnUiThread`).
+ * `init`/`deInit` fazem bind/unbind do serviço AIDL. O callback do SDK vem em
+ * thread de binder; esta classe entrega o [ScanEvent] já na thread principal.
  */
 class SdkScannerSource : ScannerSource {
 
+    private val main = Handler(Looper.getMainLooper())
     private var listener: ScanListener? = null
     private var started = false
     private var appContext: Context? = null
@@ -27,16 +29,15 @@ class SdkScannerSource : ScannerSource {
         val value = content.orEmpty()
         if (value.isEmpty()) return@ScannerSymResult
         Log.i(TAG, "onResult sym=$sym len=${value.length}")
-        listener?.onScan(
-            ScanEvent(
-                value = value,
-                symbology = sym.orEmpty(),
-                startedAtEpochMs = null,
-                endedAtEpochMs = null,
-                receivedAtEpochMs = System.currentTimeMillis(),
-                rawDetails = "sdk onResult · sym=$sym",
-            ),
+        val event = ScanEvent(
+            value = value,
+            symbology = sym.orEmpty(),
+            startedAtEpochMs = null,
+            endedAtEpochMs = null,
+            receivedAtEpochMs = System.currentTimeMillis(),
+            rawDetails = "sdk onResult · sym=$sym",
         )
+        main.post { listener?.onScan(event) }
     }
 
     override fun start(context: Context) {

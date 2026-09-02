@@ -20,13 +20,13 @@ import br.com.elatech.checkoutlab.data.RoomSaleHistory
 import br.com.elatech.checkoutlab.domain.CartLine
 import br.com.elatech.checkoutlab.domain.Money
 import br.com.elatech.checkoutlab.domain.ScanOutcome
+import br.com.elatech.checkoutlab.scanner.ScannerConfigStore
 import br.com.elatech.checkoutlab.scanner.SdkScannerSource
 
 /**
- * Tela de checkout offline (Fase 4). Bipe adiciona/incrementa; código desconhecido
- * abre cadastro de produto fictício; "Finalizar" registra venda simulada e limpa.
- *
- * Catálogo e histórico são em memória nesta etapa; a Fase 4 troca por Room.
+ * Tela de checkout offline. Bipe adiciona/incrementa; código desconhecido abre
+ * cadastro de produto fictício; "Finalizar" registra venda simulada e limpa.
+ * Catálogo e vendas em Room; scanner via SDK com [ScannerConfigStore].
  */
 class MainActivity : Activity() {
 
@@ -63,6 +63,12 @@ class MainActivity : Activity() {
         findViewById<Button>(R.id.diagnosticButton).setOnClickListener {
             startActivity(Intent(this, DiagnosticActivity::class.java))
         }
+        findViewById<Button>(R.id.settingsButton).setOnClickListener {
+            startActivity(Intent(this, ScannerSettingsActivity::class.java))
+        }
+        findViewById<Button>(R.id.historyButton).setOnClickListener {
+            startActivity(Intent(this, SalesHistoryActivity::class.java))
+        }
 
         controller.onCartChanged = { runOnUiThread { renderCart() } }
         controller.onOutcome = { outcome -> runOnUiThread { renderOutcome(outcome) } }
@@ -72,6 +78,7 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        controller.scannerConfig = ScannerConfigStore(this).load()
         controller.attach(this)
         renderCart()
     }

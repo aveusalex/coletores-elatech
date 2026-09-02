@@ -20,10 +20,12 @@ class CheckoutController(
     private val scanner: ScannerSource,
     private val catalog: Catalog,
     private val history: SaleHistory,
-    private val scannerConfig: ScannerConfig = ScannerConfig.CHECKOUT_DEFAULT,
     private val nowMs: () -> Long = System::currentTimeMillis,
 ) {
     val cart = Cart()
+
+    /** Config aplicada ao scanner no próximo [attach]. Reler do store antes de anexar. */
+    var scannerConfig: ScannerConfig = ScannerConfig.CHECKOUT_DEFAULT
 
     /** Chamado a cada leitura processada (na thread do receiver). */
     var onOutcome: ((ScanOutcome) -> Unit)? = null

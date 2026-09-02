@@ -9,7 +9,9 @@
     <string name="checkout_empty">Carrinho vazio. Bipe um produto.</string>
     <string name="checkout_finish">Finalizar venda</string>
     <string name="checkout_clear">Limpar</string>
-    <string name="checkout_open_diagnostic">Diagnóstico do scanner</string>
+    <string name="checkout_open_diagnostic">Diagnóstico</string>
+    <string name="checkout_open_settings">Ajustes do scanner</string>
+    <string name="checkout_open_history">Histórico</string>
     <string name="checkout_line_qty">Qtd: %1$d</string>
     <string name="checkout_remove">Remover</string>
     <string name="checkout_outcome_added">Adicionado: %1$s</string>
@@ -41,4 +43,22 @@
     <string name="refresh">Atualizar tela</string>
     <string name="diag_source_toggle">Trocar fonte (Broadcast / SDK)</string>
     <string name="diag_source_info">Fonte: %1$s · %2$s</string>
+
+    <!-- Ajustes do scanner -->
+    <string name="settings_title">Ajustes do scanner</string>
+    <string name="settings_note">Aplica via SDK, na configuração global do coletor (ADR 0002). Alvo: coletor dedicado ao checkout.</string>
+    <string name="settings_beep">Aviso sonoro</string>
+    <string name="settings_volume">Volume: %1$d%%</string>
+    <string name="settings_trigger">Modo de gatilho</string>
+    <string name="settings_suffix">Sufixo</string>
+    <string name="settings_output">Saída de dados</string>
+    <string name="settings_symbologies">Simbologias</string>
+    <string name="settings_save">Salvar e aplicar</string>
+    <string name="settings_saved">Ajustes aplicados</string>
+    <string name="settings_service">Serviço: %1$s</string>
+
+    <!-- Histórico de vendas -->
+    <string name="history_title">Histórico de vendas</string>
+    <string name="history_empty">Nenhuma venda registrada.</string>
+    <string name="history_row">%1$s · %2$s · %3$d itens · %4$s</string>
 </resources>

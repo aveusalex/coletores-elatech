@@ -107,10 +107,36 @@
             android:text="@string/checkout_clear" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/diagnosticButton"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/checkout_open_diagnostic" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/settingsButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/checkout_open_settings"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/historyButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/checkout_open_history"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/diagnosticButton"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/checkout_open_diagnostic"
+            android:textSize="12sp" />
+    </LinearLayout>
 </LinearLayout>
