@@ -86,6 +86,7 @@ class MainActivity : Activity() {
                 receipt.value.ifBlank { getString(R.string.empty_value) },
                 DateFormat.getDateTimeInstance().format(Date(receipt.receivedAtEpochMs)),
                 receipt.sourceAction,
+                receipt.extrasDump.ifBlank { getString(R.string.empty_value) },
             )
         }
     }

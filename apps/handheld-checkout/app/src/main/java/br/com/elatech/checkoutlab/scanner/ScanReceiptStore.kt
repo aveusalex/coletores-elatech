@@ -6,6 +6,7 @@ data class ScanReceipt(
     val value: String,
     val receivedAtEpochMs: Long,
     val sourceAction: String,
+    val extrasDump: String,
 )
 
 object ScanReceiptStore {
@@ -13,6 +14,7 @@ object ScanReceiptStore {
     private const val VALUE = "value"
     private const val RECEIVED_AT = "received_at"
     private const val SOURCE_ACTION = "source_action"
+    private const val EXTRAS_DUMP = "extras_dump"
 
     fun save(context: Context, receipt: ScanReceipt) {
         context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
@@ -20,6 +22,7 @@ object ScanReceiptStore {
             .putString(VALUE, receipt.value)
             .putLong(RECEIVED_AT, receipt.receivedAtEpochMs)
             .putString(SOURCE_ACTION, receipt.sourceAction)
+            .putString(EXTRAS_DUMP, receipt.extrasDump)
             .apply()
     }
 
@@ -32,6 +35,7 @@ object ScanReceiptStore {
             value = preferences.getString(VALUE, "") ?: "",
             receivedAtEpochMs = receivedAt,
             sourceAction = preferences.getString(SOURCE_ACTION, "") ?: "",
+            extrasDump = preferences.getString(EXTRAS_DUMP, "") ?: "",
         )
     }
 }
