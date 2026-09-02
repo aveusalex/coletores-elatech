@@ -21,6 +21,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".DiagnosticActivity"
+            android:exported="false" />
+
         <!--
             Sem receiver de manifesto: a ação real do scanner
             (com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST) é implícita e,

@@ -51,9 +51,12 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 ╰───────────────────────────────────────────────╯
 
 ╭─ FASE 4 — Checkout offline de aprendizagem ─╮
-│ ⏳ pending · Criar catálogo local, carrinho e venda simulada. │
-│ ⏳ pending · Tratar código desconhecido e leitura repetida. │
-│ ⏳ pending · Guardar vendas e produtos em banco local Room. │
+│ ✅ done · Domínio: Money (centavos), Product, Cart, Catalog, Sale, CheckoutController. │
+│ ✅ done · Tela de checkout: total, carrinho, +/−/remover, finalizar, limpar. │
+│ ✅ done · Código desconhecido → cadastro de produto fictício. Leitura repetida → debounce 400ms. │
+│ ✅ done · 7 testes JVM do fluxo (add/incremento/total/debounce/desconhecido/venda). │
+│ ⏳ pending · Trocar `InMemoryCatalog`/`InMemorySaleHistory` por Room. │
+│ ⏳ pending · Tela de ajustes do scanner (ScannerConfig) — depende do SDK p/ aplicar. │
 ╰────────────────────────────────────────────────╯
 
 ╭─ FASE 5 — Qualidade e operação de laboratório ─╮
@@ -68,7 +71,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ⏳ pending · Autorizar explicitamente qualquer conexão externa. │
 ╰────────────────────────────────────────────────────╯
 
-[███████████░░] ~80%
+[████████████░] ~85%
 
 ## Sequência detalhada
 
@@ -157,6 +160,7 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 | 2026-09-01 | 3 | Prova de broadcast executada por ADB dirigindo a UI do Barcode Utility (autorizada). Alteração reversível de PackageName/ClassName aplicada e verificada. | Permissão CAMERA `granted=true`. Scanner decodifica (EAN-13 `7899916918645`) e emite `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST` (+`_INPUT`), **não** `android.intent.scanResult`. Os campos Action/Package/Class da seção *Settings broadcast options* não tiveram efeito observável. SDK `movfast` confirma broadcast configurável via `setScanResultBroadcast`, sem constante pública. | App não recebeu bip. Falta descobrir a chave do extra da ação real (sem chutar). Decidir reverter os campos do Barcode Utility. Validar efeito da White list. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, este plano. | Autorizar diagnóstico v0.2.0 que loga todos os extras da ação real. |
 | 2026-09-01 | 3 | Diagnóstico evoluído v0.2.0→v0.3.0→v0.4.0. Contrato de broadcast **confirmado** no aparelho. | Manifest receiver é barrado no Android 13 (`Background execution not allowed`); **runtime receiver** (`RECEIVER_EXPORTED`) entrega. Ação `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST`, código em `EXTRA_BARCODE_DECODING_DATA`, simbologia em `EXTRA_BARCODE_DECODING_SYMBOLE` (`EAN-13`, `QRCODE`), tempos `TIMESTAMP_START/END`. `_INPUT` é caminho paralelo (ignorado). Sem permissão exigida no receiver. Amostras: EAN-13 `7896445490550`, QR instagram. | Reverter os 2 campos do Barcode Utility (sem impacto funcional; tela ficou inacessível). Decidir sobre suprimir o caminho `_INPUT`. Decidir SDK vs broadcast. `prefs` exportado guardado no scratchpad (não commitado). | `apps/handheld-checkout/**`, `scanner/integracao-xcscanner.md`, `collector/SESSAO_DESCOBERTA_2026-09-01.md`, este plano. | Fechar Fase 3 e iniciar Fase 4 (catálogo/carrinho offline). |
 | 2026-09-01 | 3 | Um bip = um evento confirmado (v0.4.0). Caminho morto (`android.intent.scanResult`/`scanKey`) removido do código: `ScanResultReceiver` e o `<receiver>` do manifesto apagados; `ScannerContract` só com a ação real (v0.4.1). Decisão de arquitetura registrada em **ADR 0002**. | Broadcast em runtime atende à Fase 4. Decisão: broadcast agora atrás de uma costura; **XCScanner SDK no produto** (config reproduzível, controle de gatilho/modos, desliga saída teclado). Campos do Barcode Utility: ficam como estão (inertes), sem reversão — sem impacto. | Caminho `_INPUT` ainda injeta texto em campo com foco → tratar na Fase 4 (sem EditText focado na tela de bipagem) ou mudar saída p/ broadcast puro com autorização. | `apps/handheld-checkout/**`, `docs/adr/0002-*`, `scanner/integracao-xcscanner.md`, `apps/handheld-checkout/README.md`, este plano. | Iniciar Fase 3.5 (costura `ScannerSource`) e Fase 4 (catálogo/carrinho). |
+| 2026-09-01 | 3.5/4 | Costura `ScannerSource` + `BroadcastScannerSource` (v0.5.0). Domínio da Fase 4: `Money` (centavos), `Product`, `Cart`, `Catalog`, `Sale`, `CheckoutController` (debounce 400ms). Tela de checkout (`MainActivity`) + diagnóstico movido p/ `DiagnosticActivity` (v0.6.0). 7 testes JVM verdes. Fluxo validado no aparelho por `am broadcast` simulando a ação real: bip conhecido soma correto (R$5,75 = 2,50+3,25), repetido incrementa (Café qtd 2 = R$37,80), desconhecido abre cadastro. | Deploy alvo = coletor dedicado (kiosk). `applyConfig` no broadcast é no-op (só o SDK aplica). `am broadcast` de teste exige receiver runtime + `RECEIVER_EXPORTED` (é o caso). Screenshot de finalizar venda ficou bloqueado por timeout de tela do aparelho; coberto por teste JVM. | `apps/handheld-checkout/**` (scanner/, domain/, checkout/, layouts, testes), este plano. | Room (persistir catálogo/vendas) + trazer SDK sob autorização. |
 
 ## Regras de avanço
 
@@ -173,10 +177,12 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 - **Fase 3.5 — SDK (requer autorização no momento de trazer o artefato)**: fixar
   release/commit do `XCApex/XCScannerSDK@movfast`, registrar procedência +
   checksum, validar `getServiceVersion` contra `2.0.8.1211`. Ver ADR 0002.
-- **Fase 4** pode começar em paralelo sobre o broadcast: `Product`, `CartLine`,
-  `SaleDraft`/`SaleCompleted` (preço em centavos), Room com massa fictícia,
-  tela de carrinho, item desconhecido, venda simulada. **Sem EditText com foco
-  na tela de bipagem** enquanto a saída do Barcode Utility for `.../FOCUS_OUTPUT`.
+- **Fase 4 — Room**: trocar `InMemoryCatalog` e `InMemorySaleHistory` por
+  implementações Room (KSP), mantendo as interfaces `Catalog`/`SaleHistory`.
+  Seed fictício na primeira execução. Sem `EditText` com foco na tela de
+  bipagem enquanto a saída for `.../FOCUS_OUTPUT`.
+- **Fase 4 — tela de ajustes do scanner** (`ScannerConfig`): só ganha efeito
+  quando `SdkScannerSource` existir; até lá, persistir a escolha e exibir.
 
 ### Encerrado / não-fazer
 

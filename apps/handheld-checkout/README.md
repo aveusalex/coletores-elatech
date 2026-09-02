@@ -1,6 +1,18 @@
 # Handheld Checkout Lab
 
-Aplicativo Android nativo de diagnóstico para o Ranger 2N. Nesta fase não possui catálogo, carrinho, rede ou SDK proprietário: apenas recebe e exibe um resultado de leitura do scanner, com dump completo dos extras.
+Aplicativo Android nativo para o Ranger 2N. Offline: sem rede, ERP, pagamento,
+dados reais ou SDK proprietário (ainda).
+
+- `MainActivity` — checkout offline (Fase 4): bipe adiciona/incrementa, código
+  desconhecido abre cadastro de produto fictício, "Finalizar" registra venda
+  simulada. Catálogo e histórico em memória (Room a seguir).
+- `DiagnosticActivity` — diagnóstico do scanner: mostra a leitura e o dump dos
+  extras. Acessível pelo botão "Diagnóstico do scanner".
+- `scanner/ScannerSource` — costura entre o app e o mecanismo de leitura.
+  `BroadcastScannerSource` é o transporte atual; `SdkScannerSource` (XCScanner
+  SDK) entra depois, sob autorização — ver `docs/adr/0002-*`.
+
+Testes: `./gradlew testDebugUnitTest` (fluxo de checkout, 7 casos).
 
 ## Contrato de scanner — CONFIRMADO no aparelho (2026-09-01)
 

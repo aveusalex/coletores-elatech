@@ -11,8 +11,8 @@ android {
         applicationId = "br.com.elatech.checkoutlab"
         minSdk = 29
         targetSdk = 33
-        versionCode = 6
-        versionName = "0.5.0-diagnostic"
+        versionCode = 7
+        versionName = "0.6.0"
     }
 
     compileOptions {
@@ -23,4 +23,12 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+}
+
+dependencies {
+    testImplementation("junit:junit:4.13.2")
 }

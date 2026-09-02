@@ -1,9 +1,36 @@
 <resources>
     <string name="app_name">Checkout Lab</string>
-    <string name="title">Diagnóstico do scanner</string>
-    <string name="subtitle">Este app não consulta produtos, não usa internet e não processa vendas.</string>
-    <string name="version_label">v0.5.0-diagnostic · costura ScannerSource (BroadcastScannerSource)</string>
-    <string name="contract">Fonte: BroadcastScannerSource\nAção: com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST\nDado: EXTRA_BARCODE_DECODING_DATA · Simbologia: EXTRA_BARCODE_DECODING_SYMBOLE\nRegistro em runtime (RECEIVER_EXPORTED)</string>
+
+    <!-- Checkout -->
+    <string name="checkout_title">Checkout Lab</string>
+    <string name="checkout_subtitle">Venda simulada offline. Sem ERP, pagamento, rede ou dados reais.</string>
+    <string name="checkout_total_label">Total</string>
+    <string name="checkout_items_label">%1$d itens</string>
+    <string name="checkout_empty">Carrinho vazio. Bipe um produto.</string>
+    <string name="checkout_finish">Finalizar venda</string>
+    <string name="checkout_clear">Limpar</string>
+    <string name="checkout_open_diagnostic">Diagnóstico do scanner</string>
+    <string name="checkout_line_qty">Qtd: %1$d</string>
+    <string name="checkout_remove">Remover</string>
+    <string name="checkout_outcome_added">Adicionado: %1$s</string>
+    <string name="checkout_outcome_incremented">%1$s — qtd %2$d</string>
+    <string name="checkout_outcome_unknown">Código desconhecido: %1$s</string>
+    <string name="checkout_outcome_none">Aguardando leitura…</string>
+    <string name="checkout_sale_done">Venda %1$s registrada · %2$s</string>
+
+    <!-- Diálogo de cadastro de produto fictício -->
+    <string name="unknown_title">Cadastrar produto fictício</string>
+    <string name="unknown_code">Código: %1$s</string>
+    <string name="unknown_name_hint">Nome do produto</string>
+    <string name="unknown_price_hint">Preço em centavos (ex.: 590)</string>
+    <string name="unknown_add">Cadastrar e adicionar</string>
+    <string name="unknown_cancel">Cancelar</string>
+
+    <!-- Diagnóstico -->
+    <string name="diag_title">Diagnóstico do scanner</string>
+    <string name="diag_subtitle">Este app não consulta produtos, não usa internet e não processa vendas.</string>
+    <string name="diag_version_label">v0.6.0 · costura ScannerSource (BroadcastScannerSource)</string>
+    <string name="diag_contract">Fonte: BroadcastScannerSource\nAção: com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST\nDado: EXTRA_BARCODE_DECODING_DATA · Simbologia: EXTRA_BARCODE_DECODING_SYMBOLE\nRegistro em runtime (RECEIVER_EXPORTED)</string>
     <string name="permission_granted">Permissão configurada no broadcast: concedida</string>
     <string name="permission_pending">Permissão configurada no broadcast: pendente</string>
     <string name="request_permission">Autorizar permissão do broadcast</string>
