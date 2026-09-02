@@ -1,17 +1,16 @@
 package br.com.elatech.checkoutlab.scanner
 
 /**
- * Contrato de scanner do Ranger 2N — **confirmado no aparelho** em 2026-09-01
- * (serviço `com.xcheng.scannere3` 2.0.8.1211), lendo EAN-13 e QR Code via
- * receiver registrado em runtime.
+ * Constantes do broadcast do scanner do Ranger 2N — **confirmadas no aparelho**
+ * em 2026-09-01 (serviço `com.xcheng.scannere3` 2.0.8.1211), lendo EAN-13 e QR.
  *
- * Entrega: [SCAN_ACTION] é uma ação **implícita**. No Android 13 precisa de
+ * Só o [BroadcastScannerSource] usa isto. Entrega: [SCAN_ACTION] é uma ação
+ * **implícita** — no Android 13 precisa de
  * `Context.registerReceiver(..., RECEIVER_EXPORTED)`; receiver de manifesto é
  * bloqueado ("Background execution not allowed").
  *
- * Caminho NÃO usado: a ação configurável `android.intent.scanResult` com a chave
- * `scanKey` (tela Function settings → Settings broadcast options) é **inerte
- * nesta firmware** — nunca é emitida. Não configurar nem depender dela.
+ * Caminho NÃO usado: `android.intent.scanResult` / `scanKey` (tela Function
+ * settings → Settings broadcast options) é **inerte nesta firmware**.
  */
 object ScannerContract {
     /** Ação principal emitida pelo firmware a cada leitura. */
@@ -26,10 +25,7 @@ object ScannerContract {
     const val TIMESTAMP_START_KEY = "TIMESTAMP_START"
     const val TIMESTAMP_END_KEY = "TIMESTAMP_END"
 
-    /** Aviso interno: um recibo de diagnóstico foi salvo. */
-    const val ACTION_SCAN_RECEIVED = "br.com.elatech.checkoutlab.SCAN_RECEIVED"
-
-    /** Ações que o app registra em runtime. Só a principal — `_INPUT` é ignorada. */
+    /** Ações registradas em runtime. Só a principal — `_INPUT` é ignorada. */
     val OBSERVED_ACTIONS: List<String> = listOf(SCAN_ACTION)
 
     /** Chave do código, com poucos fallbacks genéricos antes do "primeiro String não vazio". */

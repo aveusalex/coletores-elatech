@@ -2,40 +2,27 @@ package br.com.elatech.checkoutlab
 
 import android.Manifest
 import android.app.Activity
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import br.com.elatech.checkoutlab.scanner.ScanReceiptStore
-import br.com.elatech.checkoutlab.scanner.ScannerBroadcastHandler
-import br.com.elatech.checkoutlab.scanner.ScannerContract
+import br.com.elatech.checkoutlab.scanner.BroadcastScannerSource
+import br.com.elatech.checkoutlab.scanner.ScanEvent
+import br.com.elatech.checkoutlab.scanner.ScannerConfig
+import br.com.elatech.checkoutlab.scanner.ScannerSource
 import java.text.DateFormat
 import java.util.Date
 
+/**
+ * Tela de diagnóstico. Já roda sobre a costura [ScannerSource]; a Fase 4
+ * constrói catálogo/carrinho sobre a mesma interface.
+ */
 class MainActivity : Activity() {
     private lateinit var permissionStatus: TextView
     private lateinit var lastReading: TextView
 
-    /** Recebe o aviso interno de que um recibo foi salvo e apenas redesenha a tela. */
-    private val displayReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) = renderLatestReading()
-    }
-
-    /**
-     * Recebe as ações do firmware do scanner. Precisa ser registrado em runtime: no
-     * Android 13 um receiver de manifesto não recebe estes broadcasts implícitos.
-     */
-    private val scannerReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            ScannerBroadcastHandler.handle(context, intent, source = "runtime")
-            renderLatestReading()
-        }
-    }
+    private val scanner: ScannerSource = BroadcastScannerSource()
+    private var lastEvent: ScanEvent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,34 +36,23 @@ class MainActivity : Activity() {
         }
         findViewById<Button>(R.id.refreshButton).setOnClickListener { renderState() }
 
-        renderState()
+        scanner.setListener { event ->
+            lastEvent = event
+            runOnUiThread { renderLatestReading() }
+        }
+        // Fonte broadcast ignora, mas deixa registrada a intenção de config.
+        scanner.applyConfig(ScannerConfig.CHECKOUT_DEFAULT)
     }
 
     override fun onResume() {
         super.onResume()
-        registerExported(displayReceiver, IntentFilter(ScannerContract.ACTION_SCAN_RECEIVED))
-
-        val scannerFilter = IntentFilter().apply {
-            ScannerContract.OBSERVED_ACTIONS.forEach { addAction(it) }
-        }
-        registerExported(scannerReceiver, scannerFilter)
-
+        scanner.start(this)
         renderState()
     }
 
     override fun onPause() {
-        unregisterReceiver(displayReceiver)
-        unregisterReceiver(scannerReceiver)
+        scanner.stop(this)
         super.onPause()
-    }
-
-    private fun registerExported(receiver: BroadcastReceiver, filter: IntentFilter) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
-        } else {
-            @Suppress("UnspecifiedRegisterReceiverFlag")
-            registerReceiver(receiver, filter)
-        }
     }
 
     override fun onRequestPermissionsResult(
@@ -99,17 +75,16 @@ class MainActivity : Activity() {
     }
 
     private fun renderLatestReading() {
-        val receipt = ScanReceiptStore.read(this)
-        lastReading.text = if (receipt == null) {
+        val event = lastEvent
+        lastReading.text = if (event == null) {
             getString(R.string.no_reading_yet)
         } else {
             getString(
                 R.string.last_reading_template,
-                receipt.value.ifBlank { getString(R.string.empty_value) },
-                receipt.symbology.ifBlank { "?" },
-                DateFormat.getDateTimeInstance().format(Date(receipt.receivedAtEpochMs)),
-                receipt.sourceAction,
-                receipt.extrasDump.ifBlank { getString(R.string.empty_value) },
+                event.value.ifBlank { getString(R.string.empty_value) },
+                event.symbology.ifBlank { "?" },
+                DateFormat.getDateTimeInstance().format(Date(event.receivedAtEpochMs)),
+                event.rawDetails.ifBlank { getString(R.string.empty_value) },
             )
         }
     }
