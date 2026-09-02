@@ -43,9 +43,11 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 ╰───────────────────────────────────────────────╯
 
 ╭─ FASE 3.5 — Adoção do XCScanner SDK (produto) · 🔴 VOCÊ ESTÁ AQUI ─╮
-│ ⏳ pending · Definir costura `ScannerSource` (broadcast agora, SDK depois). │
+│ ⏳ pending · Costura `ScannerSource` + `BroadcastScannerSource` (transporte atual). │
+│ ⏳ pending · `ScannerConfig` no app (beep, gatilho, sufixo, simbologias) + tela de ajustes. │
 │ ⏳ pending · 🔒 AUTORIZAÇÃO · Trazer SDK: release/commit fixados, procedência + checksum. │
-│ ⏳ pending · Validar `getServiceVersion` contra 2.0.8.1211; `setOutputMethod(BROADCAST)`. │
+│ ⏳ pending · `SdkScannerSource`: `getServiceVersion` vs 2.0.8.1211; `setOutputMethod(BROADCAST)`. │
+│ ⚠️ nota · Config do scanner é device-global. Deploy alvo = coletor dedicado (kiosk). │
 ╰───────────────────────────────────────────────╯
 
 ╭─ FASE 4 — Checkout offline de aprendizagem ─╮

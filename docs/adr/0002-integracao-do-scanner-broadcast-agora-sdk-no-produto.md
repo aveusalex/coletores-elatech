@@ -2,7 +2,9 @@
 
 ## Status
 
-Aceita em 2026-09-01.
+Aceita em 2026-09-01. O usuário confirmou a direção: SDK no produto, sem
+configuração manual do coletor. A costura `ScannerSource` e a Fase 4 começam
+sobre o broadcast; o artefato do SDK entra sob autorização explícita.
 
 ## Contexto
 
@@ -48,6 +50,29 @@ A pergunta é qual integração sustenta um produto instalado em vários coletor
    momento de trazer o artefato: fixar release/commit exato do ramo `movfast`,
    registrar procedência e checksum, e validar `getServiceVersion` contra
    `2.0.8.1211` antes de remover o caminho de broadcast.
+4. **A configuração do scanner é exposta no nosso app**, não no Barcode Utility:
+   um `ScannerConfig` (beep on/off e volume, modo de gatilho, sufixo
+   nenhum/Enter/Tab, simbologias ativas) persistido localmente e aplicado via
+   `ScannerSource.applyConfig(...)`. Tela de ajustes no app.
+
+## Escopo da configuração (device-global)
+
+O scanner é um recurso único do aparelho: um serviço `XCScanner`, uma config
+ativa em `com.xcheng.scannere3_preferences.xml`. Tanto o Barcode Utility quanto
+as chamadas do SDK escrevem nessa config **global** — não há sandbox por app.
+Uma mudança nossa (ex.: remover o sufixo ENTER, trocar `setOutputMethod`) vale
+para o aparelho inteiro e para qualquer outro app que use o scanner.
+
+Estratégia:
+
+- **Deploy alvo: coletor dedicado ao app de checkout** (kiosk/MDM — ver Fase 5).
+  Sendo o único consumidor do scanner, a config global é a config do app, sem
+  conflito. É o cenário realista de um checkout de mão.
+- **Perfil por app** (a UI Xcheng mostra "APK ProfileName" / "Directional
+  output"): investigar quando o SDK entrar se dá para vincular a config ao nosso
+  pacote e restaurar o padrão ao sair. Defesa extra se o coletor for
+  compartilhado.
+- **Save/restore por sessão** (`onResume`/`onPause`) como fallback sem perfil.
 
 ## Consequências
 
