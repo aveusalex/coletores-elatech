@@ -5,12 +5,13 @@
 | Tema | Documento | Estado |
 | --- | --- | --- |
 | Equipamento | [Ranger 2N](collector/ranger-2n.md) | fonte e inventário da unidade confirmados |
-| Sessões no aparelho | [Descoberta de 2026-09-01](collector/SESSAO_DESCOBERTA_2026-09-01.md) | inventário inicial concluído |
-| Leitor 1D/2D | [Integração XCScanner](scanner/integracao-xcscanner.md) | fonte documental confirmada; teste físico pendente |
-| Computador e implantação | [Conectar e instalar](development/conectar-e-instalar.md) | procedimento documentado; não executado |
+| Sessões no aparelho | [Descoberta de 2026-09-01](collector/SESSAO_DESCOBERTA_2026-09-01.md) | ADB e app de diagnóstico instalados; bip no app pendente |
+| Leitor 1D/2D | [Integração XCScanner](scanner/integracao-xcscanner.md) | broadcast em prova; SDK ainda não adotado |
+| Computador e implantação | [Conectar e instalar](development/conectar-e-instalar.md) | procedimento executado e registrado |
 | Arquitetura | [Visão geral](architecture/visao-geral.md) | decisão inicial |
 | Decisões | [ADR 0001](adr/0001-offline-first-e-fronteira-de-middleware.md) | aceita para o laboratório |
 | Continuidade | [Plano contínuo e dump de contexto](PLANO_CONTINUO.md) | fonte de verdade operacional |
+| Troca de sessão | [Handoff para Claude Code](handoff/CLAUDE_CODE_2026-09-01.md) | pronto para retomar sem histórico desta conversa |
 
 ## Convenções de evidência
 
