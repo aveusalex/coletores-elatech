@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -11,8 +12,8 @@ android {
         applicationId = "br.com.elatech.checkoutlab"
         minSdk = 29
         targetSdk = 33
-        versionCode = 9
-        versionName = "0.8.0"
+        versionCode = 10
+        versionName = "0.9.0"
     }
 
     compileOptions {
@@ -32,6 +33,9 @@ android {
 dependencies {
     // XCScanner SDK — aar vendorado. Procedência e checksum: app/libs/PROVENANCE.md
     implementation(files("libs/xcscanner_qrcode_v1.3.56.1.14-release.aar"))
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
 
     testImplementation("junit:junit:4.13.2")
 }

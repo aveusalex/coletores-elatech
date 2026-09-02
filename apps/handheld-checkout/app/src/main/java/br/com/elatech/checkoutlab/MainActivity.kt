@@ -14,9 +14,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import br.com.elatech.checkoutlab.checkout.CheckoutController
+import br.com.elatech.checkoutlab.data.AppDatabase
+import br.com.elatech.checkoutlab.data.RoomCatalog
+import br.com.elatech.checkoutlab.data.RoomSaleHistory
 import br.com.elatech.checkoutlab.domain.CartLine
-import br.com.elatech.checkoutlab.domain.InMemoryCatalog
-import br.com.elatech.checkoutlab.domain.InMemorySaleHistory
 import br.com.elatech.checkoutlab.domain.Money
 import br.com.elatech.checkoutlab.domain.ScanOutcome
 import br.com.elatech.checkoutlab.scanner.SdkScannerSource
@@ -29,11 +30,14 @@ import br.com.elatech.checkoutlab.scanner.SdkScannerSource
  */
 class MainActivity : Activity() {
 
-    private val controller = CheckoutController(
-        scanner = SdkScannerSource(),
-        catalog = InMemoryCatalog(),
-        history = InMemorySaleHistory(),
-    )
+    private val controller: CheckoutController by lazy {
+        val db = AppDatabase.get(this)
+        CheckoutController(
+            scanner = SdkScannerSource(),
+            catalog = RoomCatalog(db.productDao()),
+            history = RoomSaleHistory(db.saleDao()),
+        )
+    }
 
     private lateinit var totalValue: TextView
     private lateinit var itemCount: TextView
