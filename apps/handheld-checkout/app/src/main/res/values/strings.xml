@@ -2,7 +2,7 @@
     <string name="app_name">Checkout Lab</string>
     <string name="title">Diagnóstico do scanner</string>
     <string name="subtitle">Este app não consulta produtos, não usa internet e não processa vendas.</string>
-    <string name="version_label">v0.4.0-diagnostic · contrato confirmado (receiver em runtime)</string>
+    <string name="version_label">v0.4.1-diagnostic · contrato confirmado (receiver em runtime)</string>
     <string name="contract">Ação: com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST\nDado: EXTRA_BARCODE_DECODING_DATA\nSimbologia: EXTRA_BARCODE_DECODING_SYMBOLE\nRegistro em runtime (RECEIVER_EXPORTED)</string>
     <string name="permission_granted">Permissão configurada no broadcast: concedida</string>
     <string name="permission_pending">Permissão configurada no broadcast: pendente</string>

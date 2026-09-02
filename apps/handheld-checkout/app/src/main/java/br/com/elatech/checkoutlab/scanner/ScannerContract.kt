@@ -5,13 +5,13 @@ package br.com.elatech.checkoutlab.scanner
  * (serviço `com.xcheng.scannere3` 2.0.8.1211), lendo EAN-13 e QR Code via
  * receiver registrado em runtime.
  *
- * Cada bip gera dois broadcasts: [SCAN_ACTION] (uso principal) e [INPUT_ACTION]
- * (caminho teclado/foco, com o mesmo dado). O app escuta só [SCAN_ACTION] para
- * ter exatamente um evento por bip.
- *
- * Entrega: no Android 13 estas ações são implícitas — precisam de
+ * Entrega: [SCAN_ACTION] é uma ação **implícita**. No Android 13 precisa de
  * `Context.registerReceiver(..., RECEIVER_EXPORTED)`; receiver de manifesto é
  * bloqueado ("Background execution not allowed").
+ *
+ * Caminho NÃO usado: a ação configurável `android.intent.scanResult` com a chave
+ * `scanKey` (tela Function settings → Settings broadcast options) é **inerte
+ * nesta firmware** — nunca é emitida. Não configurar nem depender dela.
  */
 object ScannerContract {
     /** Ação principal emitida pelo firmware a cada leitura. */
@@ -19,9 +19,6 @@ object ScannerContract {
 
     /** Caminho teclado/foco, paralelo. Ignorado: duplicaria o evento. */
     const val INPUT_ACTION = "com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST_INPUT"
-
-    /** Ação configurável na tela Function settings. Não usada por este firmware. */
-    const val LEGACY_CONFIGURABLE_ACTION = "android.intent.scanResult"
 
     /** Extras de [SCAN_ACTION]. */
     const val DATA_KEY = "EXTRA_BARCODE_DECODING_DATA"
@@ -32,15 +29,9 @@ object ScannerContract {
     /** Aviso interno: um recibo de diagnóstico foi salvo. */
     const val ACTION_SCAN_RECEIVED = "br.com.elatech.checkoutlab.SCAN_RECEIVED"
 
-    /** Ações que o app registra em runtime. */
-    val OBSERVED_ACTIONS: List<String> = listOf(SCAN_ACTION, LEGACY_CONFIGURABLE_ACTION)
+    /** Ações que o app registra em runtime. Só a principal — `_INPUT` é ignorada. */
+    val OBSERVED_ACTIONS: List<String> = listOf(SCAN_ACTION)
 
-    /** Chaves tentadas para o valor do código, na ordem, antes do fallback. */
-    val CANDIDATE_DATA_KEYS: List<String> = listOf(
-        DATA_KEY,
-        "scanKey",
-        "EXTRA_BARCODE_STRING_DATA",
-        "barcode_string",
-        "data",
-    )
+    /** Chave do código, com poucos fallbacks genéricos antes do "primeiro String não vazio". */
+    val CANDIDATE_DATA_KEYS: List<String> = listOf(DATA_KEY, "data", "barcode_string")
 }

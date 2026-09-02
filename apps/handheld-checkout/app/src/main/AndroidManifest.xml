@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Necessária apenas porque é a permissão configurada no broadcast do coletor. -->
+    <!--
+        Declarada só porque `pref_scan_result_permission = android.permission.CAMERA`
+        está configurado no Barcode Utility. O app não abre nem usa a câmera. Esse
+        caminho configurável (`android.intent.scanResult`) é inerte nesta firmware.
+    -->
     <uses-permission android:name="android.permission.CAMERA" />
 
     <application
@@ -18,16 +22,10 @@
         </activity>
 
         <!--
-            Só a ação explícita fica no manifesto. No Android 13 as ações implícitas do
-            firmware (BARCODE_DECODING_BROADCAST[_INPUT]) não chegam a receiver de
-            manifesto — são tratadas pelo receiver registrado em runtime na MainActivity.
+            Sem receiver de manifesto: a ação real do scanner
+            (com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST) é implícita e,
+            no Android 13, só chega a um receiver registrado em runtime. Ver
+            MainActivity.scannerReceiver e docs/scanner/integracao-xcscanner.md.
         -->
-        <receiver
-            android:name=".scanner.ScanResultReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.scanResult" />
-            </intent-filter>
-        </receiver>
     </application>
 </manifest>

@@ -31,17 +31,21 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 ╰────────────────────────────────────────────────╯
 
 ╭─ FASE 3 — Prova de integração do scanner ─╮
-│ 🔄 doing · 🔴 VOCÊ ESTÁ AQUI · Fechar Fase 3: reverter Barcode Utility + decidir SDK. │
-│ ✅ done · Criar, compilar, instalar e abrir app de diagnóstico. │
+│ ✅ done · App de diagnóstico criado, compilado, instalado, aberto. │
 │ ✅ done · Permissão CAMERA concedida (ADB: granted=true). │
-│ ✅ done · Alterar (autorizado) PackageName/ClassName no Barcode Utility (sem efeito funcional). │
 │ ✅ done · Descoberto: firmware emite `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST`; │
-│          campos Action/Package/Class da UI não influenciam esta firmware. │
+│          o caminho `android.intent.scanResult`/`scanKey`/PackageName/ClassName é INERTE. │
 │ ✅ done · v0.2.0→v0.3.0: manifest receiver é barrado no Android 13; runtime receiver entrega. │
-│ ✅ done · Evento por bip recebido de forma previsível (EAN-13 e QR), com simbologia. │
-│ ✅ done · Contrato fixado em `ScannerContract` (v0.4.0). │
-│ ⏳ pending · Reverter os 2 campos do Barcode Utility (sem impacto funcional). │
-│ ⏳ pending · Comparar serviço/SDK e decidir se SDK será usado. │
+│ ✅ done · Um evento por bip, previsível (EAN-13 e QR), com simbologia. Critério atendido. │
+│ ✅ done · Contrato fixado em `ScannerContract`; caminho morto removido do código (v0.4.1). │
+│ ✅ done · ⚠️ ALTERADO · Decisão registrada — ADR 0002: broadcast agora, XCScanner SDK no produto. │
+│ ⏳ pending · Barcode Utility PackageName/ClassName ficam como estão (inertes, documentado). │
+╰───────────────────────────────────────────────╯
+
+╭─ FASE 3.5 — Adoção do XCScanner SDK (produto) · 🔴 VOCÊ ESTÁ AQUI ─╮
+│ ⏳ pending · Definir costura `ScannerSource` (broadcast agora, SDK depois). │
+│ ⏳ pending · 🔒 AUTORIZAÇÃO · Trazer SDK: release/commit fixados, procedência + checksum. │
+│ ⏳ pending · Validar `getServiceVersion` contra 2.0.8.1211; `setOutputMethod(BROADCAST)`. │
 ╰───────────────────────────────────────────────╯
 
 ╭─ FASE 4 — Checkout offline de aprendizagem ─╮
@@ -62,7 +66,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ⏳ pending · Autorizar explicitamente qualquer conexão externa. │
 ╰────────────────────────────────────────────────────╯
 
-[███████████░░] ~78%
+[███████████░░] ~80%
 
 ## Sequência detalhada
 
@@ -150,6 +154,7 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 | 2026-09-01 | 3 | Handoff portátil para Claude Code criado. | Contexto, decisões, comandos validados e próxima ação documentados; não depende da conversa. | Permissão no app e prova de broadcast ainda pendentes. | `handoff/CLAUDE_CODE_2026-09-01.md`, `README.md`, este plano. | Abrir nova sessão e seguir o handoff. |
 | 2026-09-01 | 3 | Prova de broadcast executada por ADB dirigindo a UI do Barcode Utility (autorizada). Alteração reversível de PackageName/ClassName aplicada e verificada. | Permissão CAMERA `granted=true`. Scanner decodifica (EAN-13 `7899916918645`) e emite `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST` (+`_INPUT`), **não** `android.intent.scanResult`. Os campos Action/Package/Class da seção *Settings broadcast options* não tiveram efeito observável. SDK `movfast` confirma broadcast configurável via `setScanResultBroadcast`, sem constante pública. | App não recebeu bip. Falta descobrir a chave do extra da ação real (sem chutar). Decidir reverter os campos do Barcode Utility. Validar efeito da White list. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, este plano. | Autorizar diagnóstico v0.2.0 que loga todos os extras da ação real. |
 | 2026-09-01 | 3 | Diagnóstico evoluído v0.2.0→v0.3.0→v0.4.0. Contrato de broadcast **confirmado** no aparelho. | Manifest receiver é barrado no Android 13 (`Background execution not allowed`); **runtime receiver** (`RECEIVER_EXPORTED`) entrega. Ação `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST`, código em `EXTRA_BARCODE_DECODING_DATA`, simbologia em `EXTRA_BARCODE_DECODING_SYMBOLE` (`EAN-13`, `QRCODE`), tempos `TIMESTAMP_START/END`. `_INPUT` é caminho paralelo (ignorado). Sem permissão exigida no receiver. Amostras: EAN-13 `7896445490550`, QR instagram. | Reverter os 2 campos do Barcode Utility (sem impacto funcional; tela ficou inacessível). Decidir sobre suprimir o caminho `_INPUT`. Decidir SDK vs broadcast. `prefs` exportado guardado no scratchpad (não commitado). | `apps/handheld-checkout/**`, `scanner/integracao-xcscanner.md`, `collector/SESSAO_DESCOBERTA_2026-09-01.md`, este plano. | Fechar Fase 3 e iniciar Fase 4 (catálogo/carrinho offline). |
+| 2026-09-01 | 3 | Um bip = um evento confirmado (v0.4.0). Caminho morto (`android.intent.scanResult`/`scanKey`) removido do código: `ScanResultReceiver` e o `<receiver>` do manifesto apagados; `ScannerContract` só com a ação real (v0.4.1). Decisão de arquitetura registrada em **ADR 0002**. | Broadcast em runtime atende à Fase 4. Decisão: broadcast agora atrás de uma costura; **XCScanner SDK no produto** (config reproduzível, controle de gatilho/modos, desliga saída teclado). Campos do Barcode Utility: ficam como estão (inertes), sem reversão — sem impacto. | Caminho `_INPUT` ainda injeta texto em campo com foco → tratar na Fase 4 (sem EditText focado na tela de bipagem) ou mudar saída p/ broadcast puro com autorização. | `apps/handheld-checkout/**`, `docs/adr/0002-*`, `scanner/integracao-xcscanner.md`, `apps/handheld-checkout/README.md`, este plano. | Iniciar Fase 3.5 (costura `ScannerSource`) e Fase 4 (catálogo/carrinho). |
 
 ## Regras de avanço
 
@@ -160,7 +165,21 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 
 ## O que destrava AGORA
 
-- **Reverter os 2 campos do Barcode Utility** (`Broadcast Receiver PackageName/ClassName` → `com.android.scantest` / `ScanTestActivity`). Sem impacto funcional, mas o repositório registra a alteração como reversível. A tela "Settings broadcast options" ficou inacessível na sessão (Function settings renderiza a variante *Directional output*); definir com o usuário o caminho no aparelho, ou aceitar o estado atual documentado.
-- **Decidir sobre o caminho `_INPUT`**: ele ainda injeta o código como teclado em campo com foco. Para o checkout, avaliar desabilitar a saída de foco/teclado no Barcode Utility (config, requer autorização) — o app já ignora esse broadcast.
-- **Decisão SDK vs broadcast**: o broadcast em runtime cobre a necessidade da Fase 4. Só trazer o XCScanner SDK se precisar controlar gatilho/modos por API.
-- Com isso, **iniciar Fase 4**: catálogo local, carrinho, item desconhecido, venda simulada, Room.
+- **Fase 3.5 — costura `ScannerSource`**: definir a interface e a implementação
+  `BroadcastScannerSource` (a atual), para o domínio da Fase 4 não depender do
+  mecanismo. Não precisa de autorização.
+- **Fase 3.5 — SDK (requer autorização no momento de trazer o artefato)**: fixar
+  release/commit do `XCApex/XCScannerSDK@movfast`, registrar procedência +
+  checksum, validar `getServiceVersion` contra `2.0.8.1211`. Ver ADR 0002.
+- **Fase 4** pode começar em paralelo sobre o broadcast: `Product`, `CartLine`,
+  `SaleDraft`/`SaleCompleted` (preço em centavos), Room com massa fictícia,
+  tela de carrinho, item desconhecido, venda simulada. **Sem EditText com foco
+  na tela de bipagem** enquanto a saída do Barcode Utility for `.../FOCUS_OUTPUT`.
+
+### Encerrado / não-fazer
+
+- Reversão dos campos `Broadcast Receiver PackageName/ClassName` do Barcode
+  Utility: **não será feita** — são inertes nesta firmware, sem impacto. Estado
+  documentado em `scanner/integracao-xcscanner.md`.
+- Caminho `android.intent.scanResult` / `scanKey`: morto nesta firmware, removido
+  do código, não reintroduzir.
