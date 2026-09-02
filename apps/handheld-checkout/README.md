@@ -5,7 +5,8 @@ dados reais ou SDK proprietário (ainda).
 
 - `MainActivity` — checkout offline (Fase 4): bipe adiciona/incrementa, código
   desconhecido abre cadastro de produto fictício, "Finalizar" registra venda
-  simulada. Catálogo e histórico em memória (Room a seguir).
+  simulada. Catálogo e histórico em **Room** (`data/`, tabelas
+  `products`/`sales`/`sale_lines`), seed fictício no 1º create.
 - `DiagnosticActivity` — diagnóstico do scanner: mostra a leitura e o dump dos
   extras. Acessível pelo botão "Diagnóstico do scanner".
 - `scanner/ScannerSource` — costura entre o app e o mecanismo de leitura.
