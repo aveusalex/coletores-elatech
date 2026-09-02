@@ -8,6 +8,7 @@ import br.com.elatech.checkoutlab.domain.Money
 import br.com.elatech.checkoutlab.domain.Product
 import br.com.elatech.checkoutlab.domain.SaleHistory
 import br.com.elatech.checkoutlab.domain.ScanOutcome
+import br.com.elatech.checkoutlab.scanner.ScannerConfig
 import br.com.elatech.checkoutlab.scanner.ScannerSource
 import java.util.UUID
 
@@ -19,6 +20,7 @@ class CheckoutController(
     private val scanner: ScannerSource,
     private val catalog: Catalog,
     private val history: SaleHistory,
+    private val scannerConfig: ScannerConfig = ScannerConfig.CHECKOUT_DEFAULT,
     private val nowMs: () -> Long = System::currentTimeMillis,
 ) {
     val cart = Cart()
@@ -35,6 +37,8 @@ class CheckoutController(
     fun attach(context: Context) {
         scanner.setListener { event -> onScan(event.value) }
         scanner.start(context)
+        // Fontes que controlam o hardware (SDK) aplicam; broadcast ignora e devolve false.
+        scanner.applyConfig(scannerConfig)
     }
 
     fun detach(context: Context) {

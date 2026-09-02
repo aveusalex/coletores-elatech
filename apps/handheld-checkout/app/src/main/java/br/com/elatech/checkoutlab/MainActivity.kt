@@ -19,7 +19,7 @@ import br.com.elatech.checkoutlab.domain.InMemoryCatalog
 import br.com.elatech.checkoutlab.domain.InMemorySaleHistory
 import br.com.elatech.checkoutlab.domain.Money
 import br.com.elatech.checkoutlab.domain.ScanOutcome
-import br.com.elatech.checkoutlab.scanner.BroadcastScannerSource
+import br.com.elatech.checkoutlab.scanner.SdkScannerSource
 
 /**
  * Tela de checkout offline (Fase 4). Bipe adiciona/incrementa; código desconhecido
@@ -30,7 +30,7 @@ import br.com.elatech.checkoutlab.scanner.BroadcastScannerSource
 class MainActivity : Activity() {
 
     private val controller = CheckoutController(
-        scanner = BroadcastScannerSource(),
+        scanner = SdkScannerSource(),
         catalog = InMemoryCatalog(),
         history = InMemorySaleHistory(),
     )

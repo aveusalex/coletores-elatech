@@ -29,7 +29,7 @@
     <!-- Diagnóstico -->
     <string name="diag_title">Diagnóstico do scanner</string>
     <string name="diag_subtitle">Este app não consulta produtos, não usa internet e não processa vendas.</string>
-    <string name="diag_version_label">v0.6.0 · costura ScannerSource (BroadcastScannerSource)</string>
+    <string name="diag_version_label">v0.8.0 · checkout no SDK · diagnóstico alterna Broadcast/SDK</string>
     <string name="diag_contract">Fonte: BroadcastScannerSource\nAção: com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST\nDado: EXTRA_BARCODE_DECODING_DATA · Simbologia: EXTRA_BARCODE_DECODING_SYMBOLE\nRegistro em runtime (RECEIVER_EXPORTED)</string>
     <string name="permission_granted">Permissão configurada no broadcast: concedida</string>
     <string name="permission_pending">Permissão configurada no broadcast: pendente</string>
