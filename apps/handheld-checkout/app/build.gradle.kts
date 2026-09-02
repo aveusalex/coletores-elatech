@@ -11,8 +11,8 @@ android {
         applicationId = "br.com.elatech.checkoutlab"
         minSdk = 29
         targetSdk = 33
-        versionCode = 7
-        versionName = "0.6.0"
+        versionCode = 8
+        versionName = "0.7.0"
     }
 
     compileOptions {
@@ -30,5 +30,8 @@ android {
 }
 
 dependencies {
+    // XCScanner SDK — aar vendorado. Procedência e checksum: app/libs/PROVENANCE.md
+    implementation(files("libs/xcscanner_qrcode_v1.3.56.1.14-release.aar"))
+
     testImplementation("junit:junit:4.13.2")
 }

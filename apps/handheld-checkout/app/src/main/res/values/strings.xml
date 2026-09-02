@@ -39,4 +39,6 @@
     <string name="empty_value">(valor vazio)</string>
     <string name="last_reading_template">Código: %1$s\nSimbologia: %2$s\nHora: %3$s\n\nExtras:\n%4$s</string>
     <string name="refresh">Atualizar tela</string>
+    <string name="diag_source_toggle">Trocar fonte (Broadcast / SDK)</string>
+    <string name="diag_source_info">Fonte: %1$s · %2$s</string>
 </resources>

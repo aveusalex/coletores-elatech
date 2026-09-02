@@ -4,7 +4,14 @@
 
 Aceita em 2026-09-01. O usuário confirmou a direção: SDK no produto, sem
 configuração manual do coletor. A costura `ScannerSource` e a Fase 4 começam
-sobre o broadcast; o artefato do SDK entra sob autorização explícita.
+sobre o broadcast.
+
+**Implementado em 2026-09-01:** usuário autorizou o SDK; aar
+`xcscanner_qrcode_v1.3.56.1.14-release.aar` vendorada com commit fixo e
+SHA-256 (`app/libs/PROVENANCE.md`). `SdkScannerSource` faz bind do serviço e
+aplica `ScannerConfig` (verificado no aparelho: `getSdkVersion=1.3.56.1.14`,
+`applyConfig ok`). Falta provar a entrega por callback com bip físico antes de
+migrar o checkout do broadcast para o SDK.
 
 ## Contexto
 

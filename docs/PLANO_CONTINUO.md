@@ -43,10 +43,13 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 ╰───────────────────────────────────────────────╯
 
 ╭─ FASE 3.5 — Adoção do XCScanner SDK (produto) · 🔴 VOCÊ ESTÁ AQUI ─╮
-│ ⏳ pending · Costura `ScannerSource` + `BroadcastScannerSource` (transporte atual). │
-│ ⏳ pending · `ScannerConfig` no app (beep, gatilho, sufixo, simbologias) + tela de ajustes. │
-│ ⏳ pending · 🔒 AUTORIZAÇÃO · Trazer SDK: release/commit fixados, procedência + checksum. │
-│ ⏳ pending · `SdkScannerSource`: `getServiceVersion` vs 2.0.8.1211; `setOutputMethod(BROADCAST)`. │
+│ ✅ done · Costura `ScannerSource` + `BroadcastScannerSource` (transporte atual). │
+│ ✅ done · `ScannerConfig` (beep, volume, gatilho, sufixo, saída, simbologias). │
+│ ✅ done · 🔒 AUTORIZADO · aar vendorado: `xcscanner_qrcode_v1.3.56.1.14`, commit fixo, SHA-256 → `app/libs/PROVENANCE.md`. │
+│ ✅ done · `SdkScannerSource`: bind do serviço OK, `getSdkVersion=1.3.56.1.14`, `applyConfig` aplicado (serviço respondeu). │
+│ ✅ done · Toggle Broadcast/SDK na tela de diagnóstico. │
+│ ⏳ pending · Provar entrega por callback (`onResult`) com bip físico. `getServiceVersion` reconsultar (veio vazio no init). │
+│ ⏳ pending · Migrar `MainActivity` (checkout) p/ `SdkScannerSource` após a prova. │
 │ ⚠️ nota · Config do scanner é device-global. Deploy alvo = coletor dedicado (kiosk). │
 ╰───────────────────────────────────────────────╯
 
@@ -71,7 +74,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ⏳ pending · Autorizar explicitamente qualquer conexão externa. │
 ╰────────────────────────────────────────────────────╯
 
-[████████████░] ~85%
+[████████████░] ~88%
 
 ## Sequência detalhada
 
@@ -161,6 +164,7 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 | 2026-09-01 | 3 | Diagnóstico evoluído v0.2.0→v0.3.0→v0.4.0. Contrato de broadcast **confirmado** no aparelho. | Manifest receiver é barrado no Android 13 (`Background execution not allowed`); **runtime receiver** (`RECEIVER_EXPORTED`) entrega. Ação `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST`, código em `EXTRA_BARCODE_DECODING_DATA`, simbologia em `EXTRA_BARCODE_DECODING_SYMBOLE` (`EAN-13`, `QRCODE`), tempos `TIMESTAMP_START/END`. `_INPUT` é caminho paralelo (ignorado). Sem permissão exigida no receiver. Amostras: EAN-13 `7896445490550`, QR instagram. | Reverter os 2 campos do Barcode Utility (sem impacto funcional; tela ficou inacessível). Decidir sobre suprimir o caminho `_INPUT`. Decidir SDK vs broadcast. `prefs` exportado guardado no scratchpad (não commitado). | `apps/handheld-checkout/**`, `scanner/integracao-xcscanner.md`, `collector/SESSAO_DESCOBERTA_2026-09-01.md`, este plano. | Fechar Fase 3 e iniciar Fase 4 (catálogo/carrinho offline). |
 | 2026-09-01 | 3 | Um bip = um evento confirmado (v0.4.0). Caminho morto (`android.intent.scanResult`/`scanKey`) removido do código: `ScanResultReceiver` e o `<receiver>` do manifesto apagados; `ScannerContract` só com a ação real (v0.4.1). Decisão de arquitetura registrada em **ADR 0002**. | Broadcast em runtime atende à Fase 4. Decisão: broadcast agora atrás de uma costura; **XCScanner SDK no produto** (config reproduzível, controle de gatilho/modos, desliga saída teclado). Campos do Barcode Utility: ficam como estão (inertes), sem reversão — sem impacto. | Caminho `_INPUT` ainda injeta texto em campo com foco → tratar na Fase 4 (sem EditText focado na tela de bipagem) ou mudar saída p/ broadcast puro com autorização. | `apps/handheld-checkout/**`, `docs/adr/0002-*`, `scanner/integracao-xcscanner.md`, `apps/handheld-checkout/README.md`, este plano. | Iniciar Fase 3.5 (costura `ScannerSource`) e Fase 4 (catálogo/carrinho). |
 | 2026-09-01 | 3.5/4 | Costura `ScannerSource` + `BroadcastScannerSource` (v0.5.0). Domínio da Fase 4: `Money` (centavos), `Product`, `Cart`, `Catalog`, `Sale`, `CheckoutController` (debounce 400ms). Tela de checkout (`MainActivity`) + diagnóstico movido p/ `DiagnosticActivity` (v0.6.0). 7 testes JVM verdes. Fluxo validado no aparelho por `am broadcast` simulando a ação real: bip conhecido soma correto (R$5,75 = 2,50+3,25), repetido incrementa (Café qtd 2 = R$37,80), desconhecido abre cadastro. | Deploy alvo = coletor dedicado (kiosk). `applyConfig` no broadcast é no-op (só o SDK aplica). `am broadcast` de teste exige receiver runtime + `RECEIVER_EXPORTED` (é o caso). Screenshot de finalizar venda ficou bloqueado por timeout de tela do aparelho; coberto por teste JVM. | `apps/handheld-checkout/**` (scanner/, domain/, checkout/, layouts, testes), este plano. | Room (persistir catálogo/vendas) + trazer SDK sob autorização. |
+| 2026-09-01 | 3.5 | Usuário autorizou o SDK. aar `xcscanner_qrcode_v1.3.56.1.14-release.aar` vendorada em `app/libs/` (commit `2f813e4` do ramo `movfast`, SHA-256 `ae1aba41…`, Apache-2.0, procedência em `PROVENANCE.md`). `SdkScannerSource` implementa `ScannerSource` via `com.xcheng.scanner.XcBarcodeScanner`: `init`/`deInit`, callback `ScannerSymResult`, `applyConfig` mapeando `ScannerConfig` p/ `setOutputMethod`/`setSuccessNotification`/`setScanVolume`/`setScanMode`/`setTextSuffix`/`enableBarcodeType`/`saveSettings`. Toggle Broadcast↔SDK na tela de diagnóstico (v0.7.0). | No aparelho: `init` OK, `getSdkVersion=1.3.56.1.14`, `applyConfig ok` e o serviço `XCScanner` respondeu (`configDecoderTag`). `getServiceVersion()` veio vazio logo após `init` (timing — reconsultar). Build + 7 testes verdes. | Falta bip físico p/ provar `onResult`. Checkout ainda usa Broadcast. Timeout de tela do coletor atrapalha screenshots. | `apps/handheld-checkout/app/libs/**`, `scanner/SdkScannerSource.kt`, `DiagnosticActivity`, `build.gradle.kts`, `docs/adr/0002-*`, este plano. | Provar entrega SDK por bip; migrar checkout p/ SDK; Room. |
 
 ## Regras de avanço
 
@@ -177,12 +181,15 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 - **Fase 3.5 — SDK (requer autorização no momento de trazer o artefato)**: fixar
   release/commit do `XCApex/XCScannerSDK@movfast`, registrar procedência +
   checksum, validar `getServiceVersion` contra `2.0.8.1211`. Ver ADR 0002.
+- **Fase 3.5 — provar entrega SDK**: bipar com a tela de diagnóstico em modo
+  SDK e confirmar `onResult`. Depois, migrar `MainActivity` (checkout) de
+  `BroadcastScannerSource` para `SdkScannerSource` e aplicar
+  `ScannerConfig.CHECKOUT_DEFAULT` (saída broadcast puro → mata o `_INPUT`).
 - **Fase 4 — Room**: trocar `InMemoryCatalog` e `InMemorySaleHistory` por
   implementações Room (KSP), mantendo as interfaces `Catalog`/`SaleHistory`.
-  Seed fictício na primeira execução. Sem `EditText` com foco na tela de
-  bipagem enquanto a saída for `.../FOCUS_OUTPUT`.
-- **Fase 4 — tela de ajustes do scanner** (`ScannerConfig`): só ganha efeito
-  quando `SdkScannerSource` existir; até lá, persistir a escolha e exibir.
+  Seed fictício na primeira execução.
+- **Fase 4 — tela de ajustes do scanner** (`ScannerConfig`): agora tem efeito
+  via `SdkScannerSource`; persistir a escolha e aplicar no `start`.
 
 ### Encerrado / não-fazer
 

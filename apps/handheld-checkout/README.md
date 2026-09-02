@@ -9,8 +9,10 @@ dados reais ou SDK proprietário (ainda).
 - `DiagnosticActivity` — diagnóstico do scanner: mostra a leitura e o dump dos
   extras. Acessível pelo botão "Diagnóstico do scanner".
 - `scanner/ScannerSource` — costura entre o app e o mecanismo de leitura.
-  `BroadcastScannerSource` é o transporte atual; `SdkScannerSource` (XCScanner
-  SDK) entra depois, sob autorização — ver `docs/adr/0002-*`.
+  `BroadcastScannerSource` (broadcast do firmware, transporte atual do checkout)
+  e `SdkScannerSource` (XCScanner SDK, aar vendorada em `app/libs/` — ver
+  `app/libs/PROVENANCE.md` e `docs/adr/0002-*`). O diagnóstico alterna entre os
+  dois em execução.
 
 Testes: `./gradlew testDebugUnitTest` (fluxo de checkout, 7 casos).
 

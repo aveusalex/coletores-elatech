@@ -8,16 +8,23 @@ import android.widget.Button
 import android.widget.TextView
 import br.com.elatech.checkoutlab.scanner.BroadcastScannerSource
 import br.com.elatech.checkoutlab.scanner.ScanEvent
+import br.com.elatech.checkoutlab.scanner.ScannerConfig
 import br.com.elatech.checkoutlab.scanner.ScannerSource
+import br.com.elatech.checkoutlab.scanner.SdkScannerSource
 import java.text.DateFormat
 import java.util.Date
 
-/** Tela de diagnóstico do scanner. Roda sobre a mesma costura [ScannerSource]. */
+/**
+ * Diagnóstico do scanner. Permite alternar entre [BroadcastScannerSource] e
+ * [SdkScannerSource] em execução para comparar entrega e versões no aparelho.
+ */
 class DiagnosticActivity : Activity() {
     private lateinit var permissionStatus: TextView
     private lateinit var lastReading: TextView
+    private lateinit var sourceInfo: TextView
 
-    private val scanner: ScannerSource = BroadcastScannerSource()
+    private var usingSdk = false
+    private var scanner: ScannerSource = BroadcastScannerSource()
     private var lastEvent: ScanEvent? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,16 +33,15 @@ class DiagnosticActivity : Activity() {
 
         permissionStatus = findViewById(R.id.permissionStatus)
         lastReading = findViewById(R.id.lastReading)
+        sourceInfo = findViewById(R.id.sourceInfo)
 
         findViewById<Button>(R.id.requestPermissionButton).setOnClickListener {
             requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST)
         }
         findViewById<Button>(R.id.refreshButton).setOnClickListener { renderState() }
+        findViewById<Button>(R.id.sourceButton).setOnClickListener { toggleSource() }
 
-        scanner.setListener { event ->
-            lastEvent = event
-            runOnUiThread { renderLatestReading() }
-        }
+        bindListener()
     }
 
     override fun onResume() {
@@ -47,6 +53,23 @@ class DiagnosticActivity : Activity() {
     override fun onPause() {
         scanner.stop(this)
         super.onPause()
+    }
+
+    private fun toggleSource() {
+        scanner.stop(this)
+        usingSdk = !usingSdk
+        scanner = if (usingSdk) SdkScannerSource() else BroadcastScannerSource()
+        bindListener()
+        scanner.start(this)
+        if (usingSdk) scanner.applyConfig(ScannerConfig.CHECKOUT_DEFAULT)
+        renderState()
+    }
+
+    private fun bindListener() {
+        scanner.setListener { event ->
+            lastEvent = event
+            runOnUiThread { renderLatestReading() }
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -65,6 +88,11 @@ class DiagnosticActivity : Activity() {
         } else {
             getString(R.string.permission_pending)
         }
+        sourceInfo.text = getString(
+            R.string.diag_source_info,
+            if (usingSdk) "SDK" else "Broadcast",
+            scanner.serviceInfo() ?: "—",
+        )
         renderLatestReading()
     }
 
