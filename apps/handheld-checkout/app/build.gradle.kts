@@ -11,8 +11,8 @@ android {
         applicationId = "br.com.elatech.checkoutlab"
         minSdk = 29
         targetSdk = 33
-        versionCode = 3
-        versionName = "0.3.0-diagnostic"
+        versionCode = 4
+        versionName = "0.4.0-diagnostic"
     }
 
     compileOptions {

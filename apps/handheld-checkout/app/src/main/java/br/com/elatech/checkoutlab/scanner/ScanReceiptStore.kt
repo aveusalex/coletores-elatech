@@ -4,6 +4,7 @@ import android.content.Context
 
 data class ScanReceipt(
     val value: String,
+    val symbology: String,
     val receivedAtEpochMs: Long,
     val sourceAction: String,
     val extrasDump: String,
@@ -12,6 +13,7 @@ data class ScanReceipt(
 object ScanReceiptStore {
     private const val PREFERENCES = "scan_diagnostic"
     private const val VALUE = "value"
+    private const val SYMBOLOGY = "symbology"
     private const val RECEIVED_AT = "received_at"
     private const val SOURCE_ACTION = "source_action"
     private const val EXTRAS_DUMP = "extras_dump"
@@ -20,6 +22,7 @@ object ScanReceiptStore {
         context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
             .edit()
             .putString(VALUE, receipt.value)
+            .putString(SYMBOLOGY, receipt.symbology)
             .putLong(RECEIVED_AT, receipt.receivedAtEpochMs)
             .putString(SOURCE_ACTION, receipt.sourceAction)
             .putString(EXTRAS_DUMP, receipt.extrasDump)
@@ -33,6 +36,7 @@ object ScanReceiptStore {
 
         return ScanReceipt(
             value = preferences.getString(VALUE, "") ?: "",
+            symbology = preferences.getString(SYMBOLOGY, "") ?: "",
             receivedAtEpochMs = receivedAt,
             sourceAction = preferences.getString(SOURCE_ACTION, "") ?: "",
             extrasDump = preferences.getString(EXTRAS_DUMP, "") ?: "",

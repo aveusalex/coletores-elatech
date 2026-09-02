@@ -21,6 +21,7 @@ object ScannerBroadcastHandler {
 
         val receipt = ScanReceipt(
             value = extractBarcode(extras),
+            symbology = extras?.getString(ScannerContract.SYMBOLOGY_KEY).orEmpty(),
             receivedAtEpochMs = System.currentTimeMillis(),
             sourceAction = "${intent.action.orEmpty()} [$source]",
             extrasDump = dump,

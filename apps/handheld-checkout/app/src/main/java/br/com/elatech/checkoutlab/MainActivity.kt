@@ -106,6 +106,7 @@ class MainActivity : Activity() {
             getString(
                 R.string.last_reading_template,
                 receipt.value.ifBlank { getString(R.string.empty_value) },
+                receipt.symbology.ifBlank { "?" },
                 DateFormat.getDateTimeInstance().format(Date(receipt.receivedAtEpochMs)),
                 receipt.sourceAction,
                 receipt.extrasDump.ifBlank { getString(R.string.empty_value) },

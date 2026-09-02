@@ -130,6 +130,38 @@ Nenhuma linha `Sending ... android.intent.scanResult` apareceu em nenhum momento
 
 ### Pendências
 
-- Descobrir a chave do extra da ação `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST` fazendo o app logar **todos** os extras do intent (diagnóstico v0.2.0). Requer rebuild + install autorizados.
-- Decidir se os campos PackageName/ClassName do Barcode Utility voltam ao valor original (`com.android.scantest` / `ScanTestActivity`) — a alteração feita não teve efeito.
+- ~~Descobrir a chave do extra~~ — **resolvido**, ver abaixo.
+- Decidir se os campos PackageName/ClassName do Barcode Utility voltam ao valor original (`com.android.scantest` / `ScanTestActivity`) — a alteração feita não teve efeito funcional; a tela ficou inacessível na sessão.
 - Confirmar se a White list (habilitada) filtra pacotes de destino do broadcast.
+
+---
+
+## Contrato de broadcast resolvido — 2026-09-01, ~21:50
+
+### Método
+
+App de diagnóstico evoluído em três passos, todos compilados/instalados por ADB com autorização:
+
+- **v0.2.0** — receiver de manifesto passou a escutar as ações reais e a fazer dump de todos os extras. Resultado: `logcat` mostrou `W/BroadcastQueue: Background execution not allowed: receiving Intent { act=com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST } to br.com.elatech.checkoutlab/.scanner.ScanResultReceiver`. Ou seja, o broadcast **chega ao app**, mas o Android 13 barra receiver de manifesto para ação implícita.
+- **v0.3.0** — receiver passou a ser registrado em runtime na `MainActivity` (`registerReceiver(..., RECEIVER_EXPORTED)`). Bip entregue com sucesso; dump completo dos extras capturado.
+- **v0.4.0** — contrato fixado em `ScannerContract`; app escuta só a ação principal (um evento por bip); mostra código, simbologia e dump.
+
+### Contrato confirmado
+
+| Item | Valor |
+| --- | --- |
+| Ação | `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST` |
+| Código | extra `EXTRA_BARCODE_DECODING_DATA` (String) |
+| Simbologia | extra `EXTRA_BARCODE_DECODING_SYMBOLE` (String): `EAN-13`, `QRCODE` |
+| Tempo | extras `TIMESTAMP_START` / `TIMESTAMP_END` (Long) |
+| Ação paralela | `...BARCODE_DECODING_BROADCAST_INPUT` (teclado/foco): mesmo dado + `EXTRA_BARCODE_CLEAN` (Boolean). Ignorada para não duplicar. |
+| Entrega | ação implícita → exige receiver em runtime no Android 13 |
+| Permissão no receiver | não exigida para esta ação |
+
+Amostras: EAN-13 `7896445490550`; QR `https://www.instagram.com/indaiaoficial/`.
+
+### Fato x hipótese
+
+- **Fato:** a leitura chega de forma previsível a um app próprio, um evento por bip na ação principal, com simbologia. Critério de passagem da Fase 3 (prova de broadcast) atendido.
+- **Fato:** a seção "Settings broadcast options" da UI (ação `android.intent.scanResult`, `scanKey`, PackageName/ClassName) não influencia este firmware.
+- **Hipótese aberta:** efeito da White list; necessidade de suprimir o caminho `_INPUT` (que ainda injeta texto em campo com foco) via config do Barcode Utility, a decidir com o usuário na Fase 4.

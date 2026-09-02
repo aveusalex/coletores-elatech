@@ -1,39 +1,46 @@
 package br.com.elatech.checkoutlab.scanner
 
 /**
- * Valores de broadcast do scanner do Ranger 2N.
+ * Contrato de scanner do Ranger 2N — **confirmado no aparelho** em 2026-09-01
+ * (serviço `com.xcheng.scannere3` 2.0.8.1211), lendo EAN-13 e QR Code via
+ * receiver registrado em runtime.
  *
- * `SCAN_ACTION` / `DATA_KEY` são os campos configuráveis observados no Barcode Utility
- * (Function settings) em 2026-09-01. Na prova de 2026-09-01 eles não entregaram evento
- * ao app: o serviço (`2.0.8.1211`) emite as ações `OBSERVED_ACTIONS` abaixo, capturadas
- * por logcat. O diagnóstico v0.2.0 escuta todas elas e faz dump de todos os extras para
- * descobrir a chave real do dado.
+ * Cada bip gera dois broadcasts: [SCAN_ACTION] (uso principal) e [INPUT_ACTION]
+ * (caminho teclado/foco, com o mesmo dado). O app escuta só [SCAN_ACTION] para
+ * ter exatamente um evento por bip.
+ *
+ * Entrega: no Android 13 estas ações são implícitas — precisam de
+ * `Context.registerReceiver(..., RECEIVER_EXPORTED)`; receiver de manifesto é
+ * bloqueado ("Background execution not allowed").
  */
 object ScannerContract {
-    const val SCAN_ACTION = "android.intent.scanResult"
-    const val DATA_KEY = "scanKey"
+    /** Ação principal emitida pelo firmware a cada leitura. */
+    const val SCAN_ACTION = "com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST"
+
+    /** Caminho teclado/foco, paralelo. Ignorado: duplicaria o evento. */
+    const val INPUT_ACTION = "com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST_INPUT"
+
+    /** Ação configurável na tela Function settings. Não usada por este firmware. */
+    const val LEGACY_CONFIGURABLE_ACTION = "android.intent.scanResult"
+
+    /** Extras de [SCAN_ACTION]. */
+    const val DATA_KEY = "EXTRA_BARCODE_DECODING_DATA"
+    const val SYMBOLOGY_KEY = "EXTRA_BARCODE_DECODING_SYMBOLE"
+    const val TIMESTAMP_START_KEY = "TIMESTAMP_START"
+    const val TIMESTAMP_END_KEY = "TIMESTAMP_END"
+
+    /** Aviso interno: um recibo de diagnóstico foi salvo. */
     const val ACTION_SCAN_RECEIVED = "br.com.elatech.checkoutlab.SCAN_RECEIVED"
 
-    /** Ações emitidas de fato por `com.xcheng.scannere3` neste firmware (logcat 2026-09-01). */
-    val OBSERVED_ACTIONS: List<String> = listOf(
-        SCAN_ACTION,
-        "com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST",
-        "com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST_INPUT",
-    )
+    /** Ações que o app registra em runtime. */
+    val OBSERVED_ACTIONS: List<String> = listOf(SCAN_ACTION, LEGACY_CONFIGURABLE_ACTION)
 
-    /**
-     * Chaves candidatas para o valor do código, tentadas em ordem antes do fallback
-     * "primeiro extra String não vazio". Sem chute cego: o dump registra todas as chaves
-     * reais para confirmação.
-     */
+    /** Chaves tentadas para o valor do código, na ordem, antes do fallback. */
     val CANDIDATE_DATA_KEYS: List<String> = listOf(
         DATA_KEY,
-        "EXTRA_BARCODE_DECODING_DATA",
+        "scanKey",
         "EXTRA_BARCODE_STRING_DATA",
         "barcode_string",
         "data",
-        "barcode",
-        "SCAN_BARCODE1",
-        "scannerdata",
     )
 }

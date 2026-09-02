@@ -49,6 +49,26 @@ Em 2026-09-01, a unidade de laboratório confirmou leitura de Code 128, EAN-13 e
 
 Os valores acima foram lidos diretamente da interface em 2026-09-01, sem serem alterados. Eles substituem, para esta unidade, os valores genéricos do manual. ADB confirmou que `com.android.scantest` não está instalado, logo o destino atual é inativo. Não reutilizar esse identificador: o app de diagnóstico terá pacote e receiver próprios. Depois de instalado, a troca do destino será uma alteração controlada, registrada e feita somente com autorização.
 
+## Contrato de broadcast CONFIRMADO no R2N-LAB-01 — 2026-09-01
+
+Prova concluída com o app `br.com.elatech.checkoutlab` v0.3.0/v0.4.0. Leu EAN-13 e QR Code, um evento por bip na ação principal.
+
+| Item | Valor confirmado |
+| --- | --- |
+| Ação principal | `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST` |
+| Extra do código | `EXTRA_BARCODE_DECODING_DATA` (String) |
+| Extra da simbologia | `EXTRA_BARCODE_DECODING_SYMBOLE` (String) — ex.: `EAN-13`, `QRCODE` |
+| Extras de tempo | `TIMESTAMP_START`, `TIMESTAMP_END` (Long) |
+| Ação paralela (teclado/foco) | `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST_INPUT` — mesmo `EXTRA_BARCODE_DECODING_DATA` + `EXTRA_BARCODE_CLEAN` (Boolean). Duplicaria o evento; o app ignora. |
+| Entrega | Ação **implícita**. No Android 13 exige `Context.registerReceiver(receiver, filter, RECEIVER_EXPORTED)` na Activity/Service. Receiver de manifesto é bloqueado: `W/BroadcastQueue: Background execution not allowed`. |
+| Permissão | Não foi exigida permissão no receiver para esta ação. `pref_scan_result_permission = android.permission.CAMERA` só se aplica ao caminho configurável `android.intent.scanResult`, que **não é emitido** por este firmware. |
+
+Amostras lidas: EAN-13 `7896445490550`; QR `https://www.instagram.com/indaiaoficial/`.
+
+### Sobre os campos "Settings broadcast options" da UI
+
+Os campos `Scan Result Action` (`android.intent.scanResult`), `Scan Result Data Key` (`scanKey`) e `Broadcast Receiver PackageName/ClassName` da tela Function settings **não tiveram efeito observável** nesta firmware: nenhuma linha `Sending ... android.intent.scanResult` no `logcat`, e o app com filtro para essa ação nada recebeu. Em 2026-09-01, sob autorização, os campos PackageName/ClassName foram trocados para o app de diagnóstico e depois a tela ficou inacessível (o "Function settings" passou a renderizar a variante *Directional output*). O `prefs` exportado guarda o estado (`pref_broadcast_receiver_pkg`/`_cls` com o valor novo). Reversão desses dois campos: pendente e sem impacto funcional. Valores originais: `com.android.scantest` / `ScanTestActivity`.
+
 ## Uso planejado do SDK
 
 Não baixar nem embutir o SDK ainda. Na prova de leitura, consultar no aparelho a versão do serviço e, se necessário, comparar com a documentação. O guia descreve:
