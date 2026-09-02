@@ -75,3 +75,61 @@ A unidade concreta é compatível com o plano: Android 13, Barcode Utility recen
 1. Fechar os diálogos do Barcode Utility com **Cancelar**, preservando os valores atuais.
 2. No app instalado, conceder a permissão solicitada, que corresponde à permissão configurada no broadcast e não abre a câmera.
 3. Após autorização, trocar o pacote/classe de destino no Barcode Utility e confirmar um evento por bip.
+
+---
+
+## Prova de broadcast — 2026-09-01, 21:xx (mesma unidade, via ADB)
+
+### Método
+
+Sessão conduzida por ADB (`adb -d`, aparelho `Ranger_2_N_`), dirigindo a UI do Barcode Utility (`com.xcheng.scannere3`, versionName `1.3.62.1.4` — casa com "App version 1.3.62.1.4" na tela) por `uiautomator dump` + `input tap/text`. Permissão do usuário obtida por escrito antes de alterar o Barcode Utility. Cada passo teve screenshot e dump.
+
+### Estado-antes lido campo a campo (Function settings → Settings broadcast options)
+
+| Campo | Valor antes |
+| --- | --- |
+| Scan Result Action | `android.intent.scanResult` |
+| Scan Result Data Key | `scanKey` |
+| Scan Result Permission | `android.permission.CAMERA` |
+| Broadcast Receiver PackageName | `com.android.scantest` |
+| Broadcast Receiver ClassName | `ScanTestActivity` |
+
+Confirma integralmente o contrato já registrado.
+
+### Alteração aplicada (reversível, autorizada)
+
+| Campo | Depois |
+| --- | --- |
+| Broadcast Receiver PackageName | `br.com.elatech.checkoutlab` |
+| Broadcast Receiver ClassName | `br.com.elatech.checkoutlab.scanner.ScanResultReceiver` |
+| Scan Result Action / Data Key / Permission | inalterados |
+
+Persistência verificada reabrindo os dois diálogos. Os três campos preservados foram relidos e continuam iguais.
+
+### Resultado do bip
+
+Usuário bipou um EAN-13 várias vezes com o Checkout Lab em foco. **Nenhum evento chegou ao app** ("Nenhum evento recebido ainda"; `ScanReceiptStore` vazio; sem log de `ScanResultReceiver`).
+
+`logcat` do serviço mostra que o scanner **decodifica normalmente** e emite broadcast — porém com ação diferente da configurada:
+
+```
+D/KeySender( 2355): sendBarcodeInFocus+ isClearInput=true ,result=7899916918645
+E/ActivityManager: Sending non-protected broadcast com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST from ... pkg com.xcheng.scannere3
+E/ActivityManager: Sending non-protected broadcast com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST_INPUT from ... pkg com.xcheng.scannere3
+D/InputMethodService( 3993): action=com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST_INPUT
+```
+
+Nenhuma linha `Sending ... android.intent.scanResult` apareceu em nenhum momento.
+
+### Interpretação
+
+- Fato: nesta firmware/serviço (`2.0.8.1211`), a saída ativa do scanner é a ação embutida `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST` (+ `_INPUT` para o caminho teclado/foco). O EAN-13 lido foi `7899916918645`.
+- Fato: os campos "Scan Result Action / Data Key" e "Broadcast Receiver PackageName / ClassName" da seção *Settings broadcast options* **não produziram efeito observável** neste teste — o app com filtro `android.intent.scanResult` não recebeu nada e o AM não registrou envio dessa ação. O nome original da classe alvo (`ScanTestActivity`) sugere que esse caminho pode esperar um componente Activity, não um BroadcastReceiver.
+- Documentação/SDK (`XCApex/XCScannerSDK`, ramo `movfast`, `docs/XCScanner_SDK_User_Guide.md`): a entrega por broadcast é **configurável** via `XcBarcodeScanner.setScanResultBroadcast(action, resultKey)`; não há constante pública para a ação embutida nem para sua chave de extra. Placeholders do demo: `custom.broadcast.action` / `custom.broadcast.key`.
+- Hipótese a provar: um receiver registrado para `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST` recebe a leitura; a chave do extra ainda é desconhecida e deve ser descoberta por dump, não por chute.
+
+### Pendências
+
+- Descobrir a chave do extra da ação `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST` fazendo o app logar **todos** os extras do intent (diagnóstico v0.2.0). Requer rebuild + install autorizados.
+- Decidir se os campos PackageName/ClassName do Barcode Utility voltam ao valor original (`com.android.scantest` / `ScanTestActivity`) — a alteração feita não teve efeito.
+- Confirmar se a White list (habilitada) filtra pacotes de destino do broadcast.

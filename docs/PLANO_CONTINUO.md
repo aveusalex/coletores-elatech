@@ -31,9 +31,15 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 ╰────────────────────────────────────────────────╯
 
 ╭─ FASE 3 — Prova de integração do scanner ─╮
-│ 🔄 doing · 🔴 VOCÊ ESTÁ AQUI · Autorizar permissão e testar o primeiro bip. │
+│ 🔄 doing · 🔴 VOCÊ ESTÁ AQUI · Descobrir ação/chave reais do broadcast. │
 │ ✅ done · Criar, compilar, instalar e abrir app de diagnóstico. │
-│ ⏳ pending · Receber um evento por bip via broadcast. │
+│ ✅ done · Permissão CAMERA concedida (ADB: granted=true). │
+│ ✅ done · Alterar (autorizado) PackageName/ClassName no Barcode Utility. │
+│ 🚫 blocked · ⚠️ ALTERADO · Bip não chega via `android.intent.scanResult`. │
+│            Motivo: firmware emite `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST`; │
+│            os campos Action/Package/Class da UI não tiveram efeito observável. │
+│ ⏳ pending · 🆕 NOVO · Diagnóstico v0.2.0: logar todos os extras da ação real p/ achar a chave. │
+│ ⏳ pending · Receber um evento por bip de forma previsível. │
 │ ⏳ pending · Comparar serviço/SDK e decidir se SDK será usado. │
 ╰───────────────────────────────────────────────╯
 
@@ -55,7 +61,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ⏳ pending · Autorizar explicitamente qualquer conexão externa. │
 ╰────────────────────────────────────────────────────╯
 
-[██████████░░░░] ~68%
+[██████████░░░░] ~70%
 
 ## Sequência detalhada
 
@@ -141,6 +147,7 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 | 2026-09-01 | 3 | App de diagnóstico criado e APK de debug compilado localmente. | Application ID `br.com.elatech.checkoutlab`; receiver `ScanResultReceiver`; build `assembleDebug` concluído. | Instalação no Ranger e alteração autorizada do destino no Barcode Utility. | `apps/handheld-checkout/**`, `development/conectar-e-instalar.md`, este plano. | Autorizar instalação do APK. |
 | 2026-09-01 | 3 | APK de diagnóstico instalado e aberto via ADB. | Instalação retornou `Success`; pacote `br.com.elatech.checkoutlab` presente e atividade inicial iniciada. | Usuário deve conceder permissão exibida pelo app; depois, alterar com autorização o destino do Barcode Utility e testar o bip. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, `development/conectar-e-instalar.md`, este plano. | Conceder permissão no app. |
 | 2026-09-01 | 3 | Handoff portátil para Claude Code criado. | Contexto, decisões, comandos validados e próxima ação documentados; não depende da conversa. | Permissão no app e prova de broadcast ainda pendentes. | `handoff/CLAUDE_CODE_2026-09-01.md`, `README.md`, este plano. | Abrir nova sessão e seguir o handoff. |
+| 2026-09-01 | 3 | Prova de broadcast executada por ADB dirigindo a UI do Barcode Utility (autorizada). Alteração reversível de PackageName/ClassName aplicada e verificada. | Permissão CAMERA `granted=true`. Scanner decodifica (EAN-13 `7899916918645`) e emite `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST` (+`_INPUT`), **não** `android.intent.scanResult`. Os campos Action/Package/Class da seção *Settings broadcast options* não tiveram efeito observável. SDK `movfast` confirma broadcast configurável via `setScanResultBroadcast`, sem constante pública. | App não recebeu bip. Falta descobrir a chave do extra da ação real (sem chutar). Decidir reverter os campos do Barcode Utility. Validar efeito da White list. | `collector/SESSAO_DESCOBERTA_2026-09-01.md`, este plano. | Autorizar diagnóstico v0.2.0 que loga todos os extras da ação real. |
 
 ## Regras de avanço
 
@@ -151,5 +158,6 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 
 ## O que destrava AGORA
 
-- No Checkout Lab do Ranger, tocar em **Autorizar permissão do broadcast** e aceitar o aviso Android.
-- Depois, autorizar a alteração do destino no Barcode Utility para o receiver do app.
+- Autorizar rebuild + install do **diagnóstico v0.2.0**: receiver registrado também para `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST`, logando **todos** os extras do intent para descobrir a chave real do dado (a chave não deve ser chutada).
+- Decidir se os campos `Broadcast Receiver PackageName/ClassName` do Barcode Utility voltam ao original (`com.android.scantest` / `ScanTestActivity`) — a alteração feita não teve efeito observável.
+- Depois de conhecida a chave: decidir entre (a) configurar `Scan Result Action`/`Data Key` para a ação embutida real, ou (b) adotar o XCScanner SDK e chamar `setScanResultBroadcast(...)` a partir do app.
