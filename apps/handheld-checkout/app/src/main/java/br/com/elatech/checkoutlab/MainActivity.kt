@@ -9,10 +9,10 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import br.com.elatech.checkoutlab.scanner.ScanReceiptStore
+import br.com.elatech.checkoutlab.scanner.ScannerBroadcastHandler
 import br.com.elatech.checkoutlab.scanner.ScannerContract
 import java.text.DateFormat
 import java.util.Date
@@ -21,8 +21,20 @@ class MainActivity : Activity() {
     private lateinit var permissionStatus: TextView
     private lateinit var lastReading: TextView
 
+    /** Recebe o aviso interno de que um recibo foi salvo e apenas redesenha a tela. */
     private val displayReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) = renderLatestReading()
+    }
+
+    /**
+     * Recebe as ações do firmware do scanner. Precisa ser registrado em runtime: no
+     * Android 13 um receiver de manifesto não recebe estes broadcasts implícitos.
+     */
+    private val scannerReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            ScannerBroadcastHandler.handle(context, intent, source = "runtime")
+            renderLatestReading()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,19 +54,29 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        val filter = IntentFilter(ScannerContract.ACTION_SCAN_RECEIVED)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(displayReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
-        } else {
-            @Suppress("DEPRECATION")
-            registerReceiver(displayReceiver, filter)
+        registerExported(displayReceiver, IntentFilter(ScannerContract.ACTION_SCAN_RECEIVED))
+
+        val scannerFilter = IntentFilter().apply {
+            ScannerContract.OBSERVED_ACTIONS.forEach { addAction(it) }
         }
+        registerExported(scannerReceiver, scannerFilter)
+
         renderState()
     }
 
     override fun onPause() {
         unregisterReceiver(displayReceiver)
+        unregisterReceiver(scannerReceiver)
         super.onPause()
+    }
+
+    private fun registerExported(receiver: BroadcastReceiver, filter: IntentFilter) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
+        } else {
+            @Suppress("UnspecifiedRegisterReceiverFlag")
+            registerReceiver(receiver, filter)
+        }
     }
 
     override fun onRequestPermissionsResult(

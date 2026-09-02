@@ -18,16 +18,15 @@
         </activity>
 
         <!--
-            v0.2.0: escuta as ações configurável e embutidas. A entrega real neste
-            firmware é `com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST`.
+            Só a ação explícita fica no manifesto. No Android 13 as ações implícitas do
+            firmware (BARCODE_DECODING_BROADCAST[_INPUT]) não chegam a receiver de
+            manifesto — são tratadas pelo receiver registrado em runtime na MainActivity.
         -->
         <receiver
             android:name=".scanner.ScanResultReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.scanResult" />
-                <action android:name="com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST" />
-                <action android:name="com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST_INPUT" />
             </intent-filter>
         </receiver>
     </application>

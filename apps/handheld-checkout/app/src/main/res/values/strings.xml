@@ -2,7 +2,7 @@
     <string name="app_name">Checkout Lab</string>
     <string name="title">Diagnóstico do scanner</string>
     <string name="subtitle">Este app não consulta produtos, não usa internet e não processa vendas.</string>
-    <string name="version_label">v0.2.0-diagnostic · escuta múltiplas ações e faz dump de extras</string>
+    <string name="version_label">v0.3.0-diagnostic · receiver em runtime + dump de extras</string>
     <string name="contract">Ações escutadas:\nandroid.intent.scanResult\ncom.xcheng.scanner.action.BARCODE_DECODING_BROADCAST\ncom.xcheng.scanner.action.BARCODE_DECODING_BROADCAST_INPUT</string>
     <string name="permission_granted">Permissão configurada no broadcast: concedida</string>
     <string name="permission_pending">Permissão configurada no broadcast: pendente</string>
