@@ -1,71 +1,50 @@
 package br.com.elatech.checkoutlab
 
-import android.app.Activity
 import android.os.Bundle
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import br.com.elatech.checkoutlab.data.AppDatabase
 import br.com.elatech.checkoutlab.data.RoomSaleHistory
-import br.com.elatech.checkoutlab.domain.CompletedSale
-import java.text.DateFormat
+import br.com.elatech.checkoutlab.databinding.ActivitySalesHistoryBinding
+import br.com.elatech.checkoutlab.domain.Money
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
-/** Lista as vendas simuladas gravadas em Room. Somente leitura. */
-class SalesHistoryActivity : Activity() {
+/** Histórico de vendas simuladas (Room). Somente leitura. */
+class SalesHistoryActivity : AppCompatActivity() {
+
+    private lateinit var b: ActivitySalesHistoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        b = ActivitySalesHistoryBinding.inflate(layoutInflater)
+        setContentView(b.root)
+
+        b.subbar.subbarTitle.text = getString(R.string.history_title)
+        b.subbar.subbarBack.setOnClickListener { finish() }
 
         val history = RoomSaleHistory(AppDatabase.get(this).saleDao())
         val sales = history.all().sortedByDescending { it.completedAtEpochMs }
 
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(20), dp(20), dp(20), dp(20))
-        }
-        root.addView(
-            TextView(this).apply {
-                text = getString(R.string.history_title)
-                textSize = 22f
-                setTypeface(typeface, android.graphics.Typeface.BOLD)
-            },
-        )
-
         if (sales.isEmpty()) {
-            root.addView(TextView(this).apply { text = getString(R.string.history_empty); textSize = 15f })
+            b.emptyState.visibility = View.VISIBLE
+            b.salesList.visibility = View.GONE
+            b.summary.visibility = View.GONE
+            return
+        }
+
+        b.summary.visibility = View.VISIBLE
+        b.summaryCount.text = if (sales.size == 1) {
+            getString(R.string.history_summary_count_one)
         } else {
-            sales.forEach { root.addView(saleView(it)) }
+            getString(R.string.history_summary_count, sales.size)
         }
+        b.summaryTotal.text = Money(sales.sumOf { it.total.cents }).formatBRL()
+        b.summaryDate.text = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR")).format(Date())
 
-        setContentView(ScrollView(this).apply { addView(root) })
+        b.salesList.layoutManager = LinearLayoutManager(this)
+        b.salesList.adapter = SalesAdapter(sales)
     }
-
-    private fun saleView(sale: CompletedSale) = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        setPadding(0, dp(14), 0, dp(6))
-        addView(
-            TextView(this@SalesHistoryActivity).apply {
-                text = getString(
-                    R.string.history_row,
-                    sale.id.take(8),
-                    DateFormat.getDateTimeInstance().format(Date(sale.completedAtEpochMs)),
-                    sale.itemCount,
-                    sale.total.formatBRL(),
-                )
-                textSize = 15f
-                setTypeface(typeface, android.graphics.Typeface.BOLD)
-            },
-        )
-        sale.lines.forEach { line ->
-            addView(
-                TextView(this@SalesHistoryActivity).apply {
-                    text = "  ${line.product.name} · ${line.quantity} × ${line.product.price.formatBRL()}"
-                    textSize = 13f
-                },
-            )
-        }
-    }
-
-    private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/bg">
+
+    <include android:id="@+id/subbar" layout="@layout/include_subbar" />
+
+    <LinearLayout
+        android:id="@+id/summary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:background="@color/surface"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/summaryCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextCaps" />
+
+            <TextView
+                android:id="@+id/summaryTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/barlow_condensed"
+                android:textFontWeight="700"
+                android:textSize="32sp"
+                android:textColor="@color/elatech_navy_deep"
+                android:fontFeatureSettings="tnum"
+                android:includeFontPadding="false" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/summaryDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:textColor="@color/on_surface_variant"
+            android:textFontWeight="500"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/salesList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical" />
+
+        <LinearLayout
+            android:id="@+id/emptyState"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:paddingHorizontal="40dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:src="@drawable/ic_history"
+                android:contentDescription="@null"
+                app:tint="@color/n300"
+                xmlns:app="http://schemas.android.com/apk/res-auto" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="@string/history_empty_title"
+                style="@style/TextSection" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/history_empty_hint"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="16sp"
+                android:lineSpacingMultiplier="1.35" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

@@ -76,6 +76,16 @@ class CheckoutController(
         onCartChanged?.invoke()
     }
 
+    fun increment(sku: String) {
+        val line = cart.items.find { it.product.sku == sku } ?: return
+        setQuantity(sku, line.quantity + 1)
+    }
+
+    fun decrement(sku: String) {
+        val line = cart.items.find { it.product.sku == sku } ?: return
+        setQuantity(sku, line.quantity - 1)
+    }
+
     fun remove(sku: String) {
         cart.remove(sku)
         onCartChanged?.invoke()

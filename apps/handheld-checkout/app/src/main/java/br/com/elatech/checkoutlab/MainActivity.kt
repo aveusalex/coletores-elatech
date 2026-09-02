@@ -1,34 +1,32 @@
 package br.com.elatech.checkoutlab
 
-import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.PopupMenu
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import br.com.elatech.checkoutlab.checkout.CartAdapter
 import br.com.elatech.checkoutlab.checkout.CheckoutController
 import br.com.elatech.checkoutlab.data.AppDatabase
 import br.com.elatech.checkoutlab.data.RoomCatalog
 import br.com.elatech.checkoutlab.data.RoomSaleHistory
-import br.com.elatech.checkoutlab.domain.CartLine
+import br.com.elatech.checkoutlab.databinding.ActivityMainBinding
 import br.com.elatech.checkoutlab.domain.Money
 import br.com.elatech.checkoutlab.domain.ScanOutcome
 import br.com.elatech.checkoutlab.scanner.ScannerConfigStore
 import br.com.elatech.checkoutlab.scanner.SdkScannerSource
 
-/**
- * Tela de checkout offline. Bipe adiciona/incrementa; código desconhecido abre
- * cadastro de produto fictício; "Finalizar" registra venda simulada e limpa.
- * Catálogo e vendas em Room; scanner via SDK com [ScannerConfigStore].
- */
-class MainActivity : Activity() {
+/** Checkout offline. Identidade Elatech (UX v1). */
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var b: ActivityMainBinding
 
     private val controller: CheckoutController by lazy {
         val db = AppDatabase.get(this)
@@ -39,41 +37,33 @@ class MainActivity : Activity() {
         )
     }
 
-    private lateinit var totalValue: TextView
-    private lateinit var itemCount: TextView
-    private lateinit var outcomeStatus: TextView
-    private lateinit var cartLines: LinearLayout
-    private lateinit var emptyHint: TextView
+    private val adapter = CartAdapter(
+        onInc = { controller.increment(it) },
+        onDec = { controller.decrement(it) },
+        onRemove = { controller.remove(it) },
+    )
+
+    private val revertBanner = Runnable { showWaiting() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        b = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(b.root)
 
-        totalValue = findViewById(R.id.totalValue)
-        itemCount = findViewById(R.id.itemCount)
-        outcomeStatus = findViewById(R.id.outcomeStatus)
-        cartLines = findViewById(R.id.cartLines)
-        emptyHint = findViewById(R.id.emptyHint)
+        b.cartList.layoutManager = LinearLayoutManager(this)
+        b.cartList.adapter = adapter
 
-        findViewById<Button>(R.id.finishButton).setOnClickListener { finishSale() }
-        findViewById<Button>(R.id.clearButton).setOnClickListener {
-            controller.cart.clear()
-            renderCart()
-        }
-        findViewById<Button>(R.id.diagnosticButton).setOnClickListener {
-            startActivity(Intent(this, DiagnosticActivity::class.java))
-        }
-        findViewById<Button>(R.id.settingsButton).setOnClickListener {
-            startActivity(Intent(this, ScannerSettingsActivity::class.java))
-        }
-        findViewById<Button>(R.id.historyButton).setOnClickListener {
-            startActivity(Intent(this, SalesHistoryActivity::class.java))
-        }
+        b.finishButton.setOnClickListener { finishSale() }
+        b.clearButton.setOnClickListener { controller.cart.clear(); renderCart(); showWaiting() }
+        b.settingsButton.setOnClickListener { open(ScannerSettingsActivity::class.java) }
+        b.historyButton.setOnClickListener { open(SalesHistoryActivity::class.java) }
+        b.diagnosticButton.setOnClickListener { open(DiagnosticActivity::class.java) }
+        b.moreButton.setOnClickListener { showOverflow() }
 
         controller.onCartChanged = { runOnUiThread { renderCart() } }
         controller.onOutcome = { outcome -> runOnUiThread { renderOutcome(outcome) } }
 
-        outcomeStatus.text = getString(R.string.checkout_outcome_none)
+        showWaiting()
     }
 
     override fun onResume() {
@@ -85,120 +75,146 @@ class MainActivity : Activity() {
 
     override fun onPause() {
         controller.detach(this)
+        b.scanBanner.removeCallbacks(revertBanner)
         super.onPause()
     }
 
-    private fun renderOutcome(outcome: ScanOutcome) {
-        outcomeStatus.text = when (outcome) {
-            is ScanOutcome.Added ->
-                getString(R.string.checkout_outcome_added, outcome.line.product.name)
-            is ScanOutcome.Incremented ->
-                getString(
-                    R.string.checkout_outcome_incremented,
-                    outcome.line.product.name,
-                    outcome.line.quantity,
-                )
-            is ScanOutcome.Unknown -> {
-                promptRegister(outcome.code)
-                getString(R.string.checkout_outcome_unknown, outcome.code)
-            }
-        }
-    }
+    // ── carrinho ──
 
     private fun renderCart() {
-        totalValue.text = controller.cart.total.formatBRL()
-        itemCount.text = getString(R.string.checkout_items_label, controller.cart.itemCount)
-        emptyHint.visibility = if (controller.cart.isEmpty) View.VISIBLE else View.GONE
-
-        cartLines.removeAllViews()
-        for (line in controller.cart.items) {
-            cartLines.addView(cartLineView(line))
+        val cart = controller.cart
+        b.totalValue.text = cart.total.formatBRL()
+        b.itemCount.text = if (cart.itemCount == 1) {
+            getString(R.string.checkout_items_one)
+        } else {
+            getString(R.string.checkout_items_many, cart.itemCount)
         }
+        b.emptyState.visibility = if (cart.isEmpty) android.view.View.VISIBLE else android.view.View.GONE
+        b.cartList.visibility = if (cart.isEmpty) android.view.View.GONE else android.view.View.VISIBLE
+        b.finishButton.isEnabled = !cart.isEmpty
+        b.clearButton.isEnabled = !cart.isEmpty
+        adapter.submitList(cart.items)
     }
 
-    private fun cartLineView(line: CartLine): View {
-        val row = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(0, dp(10), 0, dp(10))
-            layoutParams = ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
+    // ── banner ──
+
+    private fun renderOutcome(outcome: ScanOutcome) {
+        b.scanBanner.removeCallbacks(revertBanner)
+        when (outcome) {
+            is ScanOutcome.Added -> banner(
+                R.color.banner_added_bg, R.color.banner_added_fg, R.drawable.ic_check_circle,
+                getString(R.string.checkout_outcome_added, outcome.line.product.name),
             )
-        }
-
-        val info = TextView(this).apply {
-            text = "${line.product.name}\n" +
-                "${getString(R.string.checkout_line_qty, line.quantity)} · ${line.lineTotal.formatBRL()}"
-            textSize = 15f
-            layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-        }
-        row.addView(info)
-
-        row.addView(stepButton("−") { controller.setQuantity(line.product.sku, line.quantity - 1) })
-        row.addView(stepButton("+") { controller.setQuantity(line.product.sku, line.quantity + 1) })
-        row.addView(
-            Button(this).apply {
-                text = getString(R.string.checkout_remove)
-                setOnClickListener { controller.remove(line.product.sku) }
-            },
-        )
-        return row
-    }
-
-    private fun stepButton(label: String, onClick: () -> Unit): Button =
-        Button(this).apply {
-            text = label
-            minWidth = dp(48)
-            setOnClickListener { onClick() }
-        }
-
-    private fun promptRegister(code: String) {
-        val container = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(24), dp(8), dp(24), dp(8))
-        }
-        val nameField = EditText(this).apply {
-            hint = getString(R.string.unknown_name_hint)
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
-        }
-        val priceField = EditText(this).apply {
-            hint = getString(R.string.unknown_price_hint)
-            inputType = InputType.TYPE_CLASS_NUMBER
-        }
-        container.addView(nameField)
-        container.addView(priceField)
-
-        AlertDialog.Builder(this)
-            .setTitle(R.string.unknown_title)
-            .setMessage(getString(R.string.unknown_code, code))
-            .setView(container)
-            .setPositiveButton(R.string.unknown_add) { _, _ ->
-                val name = nameField.text.toString().trim()
-                val cents = priceField.text.toString().trim().toLongOrNull()
-                if (name.isEmpty() || cents == null) {
-                    Toast.makeText(this, R.string.unknown_name_hint, Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                controller.registerUnknownAndAdd(code, name, Money(cents))
+            is ScanOutcome.Incremented -> banner(
+                R.color.banner_inc_bg, R.color.banner_inc_fg, R.drawable.ic_plus,
+                getString(
+                    R.string.checkout_outcome_incremented,
+                    outcome.line.product.name, outcome.line.quantity,
+                ),
+            )
+            is ScanOutcome.Unknown -> {
+                banner(
+                    R.color.banner_unknown_bg, R.color.banner_unknown_fg, R.drawable.ic_alert_triangle,
+                    getString(R.string.checkout_outcome_unknown, outcome.code),
+                )
+                openUnknownSheet(outcome.code)
             }
-            .setNegativeButton(R.string.unknown_cancel, null)
-            .show()
+        }
     }
+
+    private fun banner(bgRes: Int, fgRes: Int, iconRes: Int, text: String) {
+        val fg = ContextCompat.getColor(this, fgRes)
+        b.scanBanner.setBackgroundColor(ContextCompat.getColor(this, bgRes))
+        b.scanBannerIcon.setImageResource(iconRes)
+        b.scanBannerIcon.setColorFilter(fg)
+        b.scanBannerText.setTextColor(fg)
+        b.scanBannerText.text = text
+    }
+
+    private fun showWaiting() = banner(
+        R.color.banner_wait_bg, R.color.banner_wait_fg, R.drawable.ic_barcode,
+        getString(R.string.checkout_outcome_none),
+    )
 
     private fun finishSale() {
-        val sale = controller.completeSale()
-        if (sale == null) {
-            Toast.makeText(this, R.string.checkout_empty, Toast.LENGTH_SHORT).show()
-            return
-        }
-        outcomeStatus.text = getString(
-            R.string.checkout_sale_done,
-            sale.id.take(8),
-            sale.total.formatBRL(),
+        val sale = controller.completeSale() ?: return
+        banner(
+            R.color.banner_done_bg, R.color.banner_done_fg, R.drawable.ic_check_circle,
+            getString(R.string.checkout_sale_done, sale.id.take(8).uppercase(), sale.total.formatBRL()),
         )
         renderCart()
+        b.scanBanner.postDelayed(revertBanner, 2500)
     }
 
-    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
+    // ── código desconhecido ──
+
+    private fun openUnknownSheet(code: String) {
+        val dialog = BottomSheetDialog(this)
+        val view = layoutInflater.inflate(R.layout.sheet_unknown_product, null)
+        dialog.setContentView(view)
+
+        view.findViewById<android.widget.TextView>(R.id.sheetCode).text = code
+        val nameLayout = view.findViewById<TextInputLayout>(R.id.nameLayout)
+        val priceLayout = view.findViewById<TextInputLayout>(R.id.priceLayout)
+        val nameInput = view.findViewById<TextInputEditText>(R.id.nameInput)
+        val priceInput = view.findViewById<TextInputEditText>(R.id.priceInput)
+
+        priceInput.addTextChangedListener(CentsMaskWatcher(priceInput))
+        nameInput.addTextChangedListener(clearErrorWatcher(nameLayout))
+        priceInput.addTextChangedListener(clearErrorWatcher(priceLayout))
+
+        view.findViewById<MaterialButton>(R.id.cancelButton).setOnClickListener { dialog.dismiss() }
+        view.findViewById<MaterialButton>(R.id.submitButton).setOnClickListener {
+            val name = nameInput.text?.toString()?.trim().orEmpty()
+            val cents = priceInput.text?.toString().orEmpty().filter { it.isDigit() }.toLongOrNull() ?: 0L
+            var ok = true
+            if (name.isEmpty()) { nameLayout.error = getString(R.string.unknown_err_name); ok = false }
+            if (cents <= 0L) { priceLayout.error = getString(R.string.unknown_err_price); ok = false }
+            if (!ok) return@setOnClickListener
+            controller.registerUnknownAndAdd(code, name, Money(cents))
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun clearErrorWatcher(layout: TextInputLayout) = object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit
+        override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) { layout.error = null }
+        override fun afterTextChanged(s: Editable?) = Unit
+    }
+
+    /** Máscara de centavos: só dígitos → "R$ x,xx". */
+    private inner class CentsMaskWatcher(private val target: TextInputEditText) : TextWatcher {
+        private var editing = false
+        override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit
+        override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) = Unit
+        override fun afterTextChanged(s: Editable?) {
+            if (editing) return
+            editing = true
+            val digits = s?.toString().orEmpty().filter { it.isDigit() }.take(8)
+            val formatted = if (digits.isEmpty()) "" else Money(digits.toLong()).formatBRL()
+            target.setText(formatted)
+            target.setSelection(formatted.length)
+            editing = false
+        }
+    }
+
+    // ── navegação ──
+
+    private fun showOverflow() {
+        PopupMenu(this, b.moreButton).apply {
+            menuInflater.inflate(R.menu.checkout_overflow, menu)
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.action_settings -> open(ScannerSettingsActivity::class.java)
+                    R.id.action_history -> open(SalesHistoryActivity::class.java)
+                    R.id.action_diagnostic -> open(DiagnosticActivity::class.java)
+                }
+                true
+            }
+            show()
+        }
+    }
+
+    private fun open(cls: Class<*>) = startActivity(Intent(this, cls))
 }

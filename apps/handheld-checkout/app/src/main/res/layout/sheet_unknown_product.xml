@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/surface"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="0dp"
+    android:paddingBottom="12dp">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginHorizontal="-16dp"
+        android:background="@color/elatech_orange" />
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:background="@color/n200" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/unknown_title"
+        style="@style/TextSection" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/warning_container"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="8dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_alert_triangle"
+            app:tint="@color/warning"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="@string/unknown_code_label"
+            android:textColor="@color/warning"
+            android:textFontWeight="500"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/sheetCode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textColor="@color/on_error_container"
+            android:textFontWeight="600"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/nameLayout"
+        style="@style/Widget.Elatech.TextInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:hint="@string/unknown_name_hint">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/nameInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textCapSentences"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/priceLayout"
+        style="@style/Widget.Elatech.TextInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:hint="@string/unknown_price_hint"
+        app:helperTextEnabled="true"
+        app:helperText="@string/unknown_price_help">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/priceInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:textFontWeight="600"
+            android:textSize="18sp"
+            android:fontFeatureSettings="tnum" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/cancelButton"
+            style="@style/Widget.Elatech.Button.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:text="@string/unknown_cancel" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/submitButton"
+            style="@style/Widget.Elatech.Button.Primary"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1.6"
+            android:layout_marginStart="8dp"
+            android:text="@string/unknown_add" />
+    </LinearLayout>
+</LinearLayout>

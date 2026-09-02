@@ -1,103 +1,75 @@
 package br.com.elatech.checkoutlab
 
-import android.app.Activity
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.CheckBox
 import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.SeekBar
-import android.widget.Spinner
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.materialswitch.MaterialSwitch
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
+import br.com.elatech.checkoutlab.databinding.ActivityScannerSettingsBinding
 import br.com.elatech.checkoutlab.scanner.ScannerConfig
 import br.com.elatech.checkoutlab.scanner.ScannerConfigStore
 import br.com.elatech.checkoutlab.scanner.SdkScannerSource
 
-/**
- * Edita o [ScannerConfig], persiste no [ScannerConfigStore] e aplica no serviço
- * via [SdkScannerSource]. UI montada em código (só widgets de framework).
- */
-class ScannerSettingsActivity : Activity() {
+/** Edita, persiste e aplica o [ScannerConfig] via SDK. */
+class ScannerSettingsActivity : AppCompatActivity() {
 
+    private lateinit var b: ActivityScannerSettingsBinding
     private val store by lazy { ScannerConfigStore(this) }
     private val scanner = SdkScannerSource()
 
-    private lateinit var beepSpinner: Spinner
-    private lateinit var triggerSpinner: Spinner
-    private lateinit var suffixSpinner: Spinner
-    private lateinit var outputSpinner: Spinner
-    private lateinit var volumeBar: SeekBar
-    private lateinit var volumeLabel: TextView
-    private lateinit var serviceLabel: TextView
-    private val symbologyChecks = LinkedHashMap<ScannerConfig.Symbology, CheckBox>()
+    private val beepValues = ScannerConfig.Beep.entries
+    private val triggerValues = ScannerConfig.Trigger.entries
+    private val suffixValues = ScannerConfig.Suffix.entries
+    private val outputValues = ScannerConfig.Output.entries
+    private val symbologyValues = ScannerConfig.Symbology.entries
+
+    private val symbologySwitches = LinkedHashMap<ScannerConfig.Symbology, MaterialSwitch>()
+    private var loaded: ScannerConfig = ScannerConfig.CHECKOUT_DEFAULT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val cfg = store.load()
+        b = ActivityScannerSettingsBinding.inflate(layoutInflater)
+        setContentView(b.root)
 
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(dp(20), dp(20), dp(20), dp(20))
-        }
-        root.addView(title(getString(R.string.settings_title)))
-        root.addView(note(getString(R.string.settings_note)))
+        b.subbar.subbarTitle.text = getString(R.string.settings_title)
+        b.subbar.subbarBack.setOnClickListener { finish() }
 
-        serviceLabel = note("")
-        root.addView(serviceLabel)
+        loaded = store.load()
 
-        beepSpinner = enumSpinner(ScannerConfig.Beep.entries, cfg.beep)
-        triggerSpinner = enumSpinner(ScannerConfig.Trigger.entries, cfg.trigger)
-        suffixSpinner = enumSpinner(ScannerConfig.Suffix.entries, cfg.suffix)
-        outputSpinner = enumSpinner(ScannerConfig.Output.entries, cfg.output)
+        setupDropdown(b.beepInput, beepValues.map(::beepLabel), beepValues.indexOf(loaded.beep))
+        setupDropdown(b.triggerInput, triggerValues.map(::triggerLabel), triggerValues.indexOf(loaded.trigger))
+        setupDropdown(b.suffixInput, suffixValues.map(::suffixLabel), suffixValues.indexOf(loaded.suffix))
+        setupDropdown(b.outputInput, outputValues.map(::outputLabel), outputValues.indexOf(loaded.output))
 
-        root.addView(labeled(getString(R.string.settings_beep), beepSpinner))
-
-        volumeLabel = note(getString(R.string.settings_volume, cfg.beepVolumePercent))
-        volumeBar = SeekBar(this).apply {
-            max = 100
-            progress = cfg.beepVolumePercent
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(sb: SeekBar, value: Int, fromUser: Boolean) {
-                    volumeLabel.text = getString(R.string.settings_volume, value)
-                }
-                override fun onStartTrackingTouch(sb: SeekBar) = Unit
-                override fun onStopTrackingTouch(sb: SeekBar) = Unit
-            })
-        }
-        root.addView(volumeLabel)
-        root.addView(volumeBar)
-
-        root.addView(labeled(getString(R.string.settings_trigger), triggerSpinner))
-        root.addView(labeled(getString(R.string.settings_suffix), suffixSpinner))
-        root.addView(labeled(getString(R.string.settings_output), outputSpinner))
-
-        root.addView(sectionLabel(getString(R.string.settings_symbologies)))
-        for (sym in ScannerConfig.Symbology.entries) {
-            val cb = CheckBox(this).apply {
-                text = sym.name
-                isChecked = sym in cfg.enabledSymbologies
-            }
-            symbologyChecks[sym] = cb
-            root.addView(cb)
+        val snapped = (loaded.beepVolumePercent / 5 * 5).coerceIn(0, 100)
+        b.volumeSlider.value = snapped.toFloat()
+        b.volumeValue.text = getString(R.string.settings_volume_pct, snapped)
+        b.volumeSlider.addOnChangeListener { _, value, _ ->
+            b.volumeValue.text = getString(R.string.settings_volume_pct, value.toInt())
+            refreshDirty()
         }
 
-        root.addView(
-            Button(this).apply {
-                text = getString(R.string.settings_save)
-                setOnClickListener { saveAndApply() }
-            },
-        )
+        buildSymbologyRows()
 
-        setContentView(ScrollView(this).apply { addView(root) })
+        val dirtyWatcher = { refreshDirty() }
+        listOf(b.beepInput, b.triggerInput, b.suffixInput, b.outputInput).forEach {
+            it.setOnItemClickListener { _, _, _, _ -> refreshDirty() }
+        }
+
+        b.saveButton.setOnClickListener { saveAndApply() }
+        refreshDirty()
     }
 
     override fun onResume() {
         super.onResume()
         scanner.start(this)
-        serviceLabel.text = getString(R.string.settings_service, scanner.serviceInfo() ?: "—")
+        b.root.postDelayed({ renderServiceStatus() }, 600)
+        renderServiceStatus()
     }
 
     override fun onPause() {
@@ -105,62 +77,114 @@ class ScannerSettingsActivity : Activity() {
         super.onPause()
     }
 
+    // ── UI ──
+
+    private fun setupDropdown(input: MaterialAutoCompleteTextView, labels: List<String>, selected: Int) {
+        input.setAdapter(ArrayAdapter(this, android.R.layout.simple_list_item_1, labels))
+        input.setText(labels[selected.coerceAtLeast(0)], false)
+    }
+
+    private fun buildSymbologyRows() {
+        symbologyValues.forEach { sym ->
+            val row = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                minimumHeight = dp(48)
+            }
+            val label = TextView(this).apply {
+                text = sym.name.replace('_', '-')
+                textSize = 16f
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+            val sw = MaterialSwitch(this).apply {
+                isChecked = sym in loaded.enabledSymbologies
+                setOnCheckedChangeListener { _, _ -> refreshDirty() }
+            }
+            symbologySwitches[sym] = sw
+            row.addView(label)
+            row.addView(sw)
+            b.symbologyContainer.addView(row)
+        }
+    }
+
+    private fun renderServiceStatus() {
+        val info = scanner.serviceInfo()
+        val compatible = info?.contains("match=true") == true || info == null
+        b.incompatBanner.visibility = if (compatible) View.GONE else View.VISIBLE
+        b.serviceOkRow.visibility = if (compatible) View.VISIBLE else View.GONE
+        b.serviceOkText.text = getString(R.string.settings_service_ok, info ?: "—")
+        b.incompatBody.text = getString(R.string.settings_service_bad_body, info ?: "—")
+        b.saveButton.isEnabled = compatible
+    }
+
     private fun current(): ScannerConfig = ScannerConfig(
-        beep = ScannerConfig.Beep.entries[beepSpinner.selectedItemPosition],
-        beepVolumePercent = volumeBar.progress,
-        trigger = ScannerConfig.Trigger.entries[triggerSpinner.selectedItemPosition],
-        suffix = ScannerConfig.Suffix.entries[suffixSpinner.selectedItemPosition],
-        output = ScannerConfig.Output.entries[outputSpinner.selectedItemPosition],
-        enabledSymbologies = symbologyChecks.filterValues { it.isChecked }.keys.toSet(),
+        beep = beepValues[indexOfLabel(b.beepInput, beepValues.map(::beepLabel))],
+        beepVolumePercent = b.volumeSlider.value.toInt(),
+        trigger = triggerValues[indexOfLabel(b.triggerInput, triggerValues.map(::triggerLabel))],
+        suffix = suffixValues[indexOfLabel(b.suffixInput, suffixValues.map(::suffixLabel))],
+        output = outputValues[indexOfLabel(b.outputInput, outputValues.map(::outputLabel))],
+        enabledSymbologies = symbologySwitches.filterValues { it.isChecked }.keys.toSet(),
     )
+
+    private fun indexOfLabel(input: MaterialAutoCompleteTextView, labels: List<String>): Int =
+        labels.indexOf(input.text?.toString()).coerceAtLeast(0)
+
+    private fun refreshDirty() {
+        val dirty = current() != loaded
+        b.subbar.subbarBadge.visibility = if (dirty) View.VISIBLE else View.GONE
+    }
 
     private fun saveAndApply() {
         val cfg = current()
         store.save(cfg)
+        loaded = cfg
+        refreshDirty()
         val applied = scanner.applyConfig(cfg)
-        Toast.makeText(
-            this,
-            if (applied) R.string.settings_saved else R.string.settings_title,
-            Toast.LENGTH_SHORT,
-        ).show()
-        serviceLabel.text = getString(R.string.settings_service, scanner.serviceInfo() ?: "—")
+        Snackbar.make(
+            b.root,
+            if (applied) R.string.settings_saved else R.string.settings_apply_failed,
+            Snackbar.LENGTH_SHORT,
+        ).apply {
+            if (!applied) setAction(R.string.settings_retry) { saveAndApply() }
+        }.show()
+        renderServiceStatus()
     }
 
-    // --- helpers de UI ---
+    // ── rótulos pt-BR ──
 
-    private fun <E : Enum<E>> enumSpinner(values: List<E>, selected: E): Spinner =
-        Spinner(this).apply {
-            adapter = ArrayAdapter(
-                this@ScannerSettingsActivity,
-                android.R.layout.simple_spinner_dropdown_item,
-                values.map { it.name },
-            )
-            setSelection(values.indexOf(selected).coerceAtLeast(0))
-        }
+    private fun beepLabel(v: ScannerConfig.Beep) = getString(
+        when (v) {
+            ScannerConfig.Beep.MUTE -> R.string.beep_mute
+            ScannerConfig.Beep.SOUND -> R.string.beep_sound
+            ScannerConfig.Beep.VIBRATE -> R.string.beep_vibrate
+            ScannerConfig.Beep.SOUND_VIBRATE -> R.string.beep_sound_vibrate
+        },
+    )
 
-    private fun labeled(label: String, view: View): View = LinearLayout(this).apply {
-        orientation = LinearLayout.VERTICAL
-        setPadding(0, dp(12), 0, 0)
-        addView(sectionLabel(label))
-        addView(view)
-    }
+    private fun triggerLabel(v: ScannerConfig.Trigger) = getString(
+        when (v) {
+            ScannerConfig.Trigger.SINGLE -> R.string.trigger_single
+            ScannerConfig.Trigger.CONTINUOUS -> R.string.trigger_continuous
+            ScannerConfig.Trigger.PULSE -> R.string.trigger_pulse
+        },
+    )
 
-    private fun title(t: String) = TextView(this).apply {
-        text = t
-        textSize = 22f
-        setTypeface(typeface, android.graphics.Typeface.BOLD)
-    }
+    private fun suffixLabel(v: ScannerConfig.Suffix) = getString(
+        when (v) {
+            ScannerConfig.Suffix.NONE -> R.string.suffix_none
+            ScannerConfig.Suffix.ENTER -> R.string.suffix_enter
+            ScannerConfig.Suffix.TAB -> R.string.suffix_tab
+            ScannerConfig.Suffix.NEWLINE -> R.string.suffix_newline
+        },
+    )
 
-    private fun sectionLabel(t: String) = TextView(this).apply {
-        text = t
-        textSize = 14f
-    }
-
-    private fun note(t: String) = TextView(this).apply {
-        text = t
-        textSize = 12f
-        setPadding(0, dp(4), 0, dp(4))
-    }
+    private fun outputLabel(v: ScannerConfig.Output) = getString(
+        when (v) {
+            ScannerConfig.Output.BROADCAST_ONLY -> R.string.output_broadcast_only
+            ScannerConfig.Output.BROADCAST_AND_KEYBOARD -> R.string.output_broadcast_keyboard
+            ScannerConfig.Output.BROADCAST_AND_CLIPBOARD -> R.string.output_broadcast_clipboard
+        },
+    )
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 }

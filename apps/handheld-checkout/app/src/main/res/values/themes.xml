@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.CheckoutLab" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Marca -->
+        <item name="colorPrimary">@color/elatech_orange</item>
+        <item name="colorOnPrimary">@color/elatech_navy_deep</item>
+        <item name="colorPrimaryContainer">@color/warning_container</item>
+        <item name="colorOnPrimaryContainer">@color/elatech_navy_deep</item>
+        <item name="colorSecondary">@color/elatech_navy</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorSecondaryContainer">@color/elatech_navy_container</item>
+        <item name="colorOnSecondaryContainer">@color/elatech_navy</item>
+
+        <!-- Superfícies -->
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/on_surface</item>
+        <item name="colorSurfaceVariant">@color/n50</item>
+        <item name="colorOnSurfaceVariant">@color/on_surface_variant</item>
+        <item name="colorOutline">@color/outline</item>
+        <item name="colorOutlineVariant">@color/divider</item>
+
+        <!-- Semânticas -->
+        <item name="colorError">@color/error</item>
+        <item name="colorErrorContainer">@color/error_container</item>
+        <item name="colorOnErrorContainer">@color/on_error_container</item>
+
+        <!-- Sistema -->
+        <item name="android:statusBarColor">@color/elatech_navy_deep</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/surface</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+
+        <!-- Tipografia base -->
+        <item name="android:fontFamily">@font/barlow</item>
+        <item name="fontFamily">@font/barlow</item>
+
+        <!-- Forma: cantos retos / raio 4 -->
+        <item name="shapeAppearanceCornerExtraSmall">@style/Shape.Elatech.Small</item>
+        <item name="shapeAppearanceCornerSmall">@style/Shape.Elatech.Small</item>
+        <item name="shapeAppearanceCornerMedium">@style/Shape.Elatech.Small</item>
+        <item name="shapeAppearanceCornerLarge">@style/Shape.Elatech.Small</item>
+
+        <item name="materialButtonStyle">@style/Widget.Elatech.Button</item>
+        <item name="textInputStyle">@style/Widget.Elatech.TextInput</item>
+    </style>
+
+    <style name="Shape.Elatech.Small" parent="ShapeAppearance.Material3.Corner.Small">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">4dp</item>
+    </style>
+
+    <!-- ══ Tipografia ══ -->
+    <style name="TextTotal">
+        <item name="android:fontFamily">@font/barlow_condensed</item>
+        <item name="android:textFontWeight">700</item>
+        <item name="android:textSize">40sp</item>
+        <item name="android:textColor">@color/elatech_navy_deep</item>
+        <item name="android:fontFeatureSettings">tnum</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="TextSection">
+        <item name="android:fontFamily">@font/barlow_condensed</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/elatech_navy_deep</item>
+    </style>
+
+    <style name="TextTopbarTitle">
+        <item name="android:fontFamily">@font/barlow_condensed</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <style name="TextBodyLarge">
+        <item name="android:fontFamily">@font/barlow</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/on_surface</item>
+        <item name="android:lineSpacingMultiplier">1.15</item>
+    </style>
+
+    <style name="TextBodyMedium">
+        <item name="android:fontFamily">@font/barlow</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/on_surface_variant</item>
+    </style>
+
+    <style name="TextCaps">
+        <item name="android:fontFamily">@font/barlow</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/on_surface_variant</item>
+        <item name="android:letterSpacing">0.12</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="TextMono">
+        <item name="android:fontFamily">monospace</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/on_surface</item>
+    </style>
+
+    <!-- ══ Botões ══ -->
+    <style name="Widget.Elatech.Button" parent="Widget.Material3.Button">
+        <item name="android:fontFamily">@font/barlow_condensed</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">0.03</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="cornerRadius">4dp</item>
+    </style>
+
+    <style name="Widget.Elatech.Button.Primary">
+        <item name="android:textSize">20sp</item>
+        <item name="backgroundTint">@color/btn_primary_bg</item>
+        <item name="android:textColor">@color/btn_primary_fg</item>
+        <item name="iconTint">@color/btn_primary_fg</item>
+        <item name="rippleColor">#33000000</item>
+        <item name="android:minHeight">56dp</item>
+    </style>
+
+    <style name="Widget.Elatech.Button.Secondary" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:fontFamily">@font/barlow_condensed</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:letterSpacing">0.04</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/elatech_navy</item>
+        <item name="strokeColor">@color/elatech_navy</item>
+        <item name="cornerRadius">4dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="Widget.Elatech.Button.Danger" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:fontFamily">@font/barlow_condensed</item>
+        <item name="android:textFontWeight">600</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/error</item>
+        <item name="strokeColor">@color/error</item>
+        <item name="cornerRadius">4dp</item>
+    </style>
+
+    <style name="Widget.Elatech.Button.Nav" parent="Widget.Material3.Button.TextButton">
+        <item name="android:fontFamily">@font/barlow</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/elatech_navy</item>
+        <item name="iconTint">@color/elatech_navy</item>
+        <item name="iconGravity">top</item>
+        <item name="iconPadding">2dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
+    <!-- ══ Campos ══ -->
+    <style name="Widget.Elatech.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">4dp</item>
+        <item name="boxCornerRadiusTopEnd">4dp</item>
+        <item name="boxCornerRadiusBottomStart">4dp</item>
+        <item name="boxCornerRadiusBottomEnd">4dp</item>
+        <item name="boxStrokeColor">@color/elatech_navy</item>
+        <item name="hintTextColor">@color/on_surface_variant</item>
+        <item name="errorEnabled">true</item>
+    </style>
+
+    <style name="Widget.Elatech.Dropdown" parent="Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxCornerRadiusTopStart">4dp</item>
+        <item name="boxCornerRadiusTopEnd">4dp</item>
+        <item name="boxCornerRadiusBottomStart">4dp</item>
+        <item name="boxCornerRadiusBottomEnd">4dp</item>
+        <item name="boxStrokeColor">@color/elatech_navy</item>
+    </style>
+
+    <!-- Card wireframe: sem fill, borda hairline, cantos retos -->
+    <style name="Widget.Elatech.Card" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardCornerRadius">0dp</item>
+        <item name="strokeColor">@color/divider</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="cardBackgroundColor">@color/surface</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <style name="DiagCard">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_hairline_card</item>
+        <item name="android:padding">12dp</item>
+    </style>
+</resources>

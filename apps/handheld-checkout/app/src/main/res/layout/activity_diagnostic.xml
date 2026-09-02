@@ -1,99 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical"
+    android:background="@color/bg">
 
-    <LinearLayout
+    <include android:id="@+id/subbar" layout="@layout/include_subbar" />
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:clipToPadding="false">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/diag_title"
-            android:textColor="@android:color/black"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/diag_subtitle"
-            android:textSize="16sp" />
+            android:orientation="vertical">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/diag_version_label"
-            android:textSize="13sp" />
+            <!-- Permissão -->
+            <LinearLayout style="@style/DiagCard" android:orientation="vertical">
+                <TextView style="@style/TextCaps" android:textSize="11sp"
+                    android:text="@string/diag_perm_label" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="6dp">
+                    <ImageView android:id="@+id/permIcon" android:layout_width="20dp" android:layout_height="20dp"
+                        android:src="@drawable/ic_check_circle" app:tint="@color/success" android:contentDescription="@null" />
+                    <TextView android:id="@+id/permStatus" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp" android:textFontWeight="500" android:textSize="16sp"
+                        android:textColor="@color/success" />
+                </LinearLayout>
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/diag_contract"
-            android:textColor="@android:color/black"
-            android:textIsSelectable="true"
-            android:textSize="15sp" />
+            <!-- Contrato -->
+            <LinearLayout style="@style/DiagCard" android:orientation="vertical" android:layout_marginTop="12dp">
+                <TextView style="@style/TextCaps" android:textSize="11sp"
+                    android:text="@string/diag_contract_label" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:fontFamily="monospace" android:textSize="13sp"
+                    android:textColor="@color/on_surface" android:lineSpacingMultiplier="1.4"
+                    android:text="@string/diag_contract" />
+            </LinearLayout>
 
-        <TextView
-            android:id="@+id/permissionStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:textSize="16sp" />
+            <!-- Fonte -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sourceButton"
+                style="@style/Widget.Elatech.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/diag_source_toggle" />
 
-        <Button
-            android:id="@+id/requestPermissionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/request_permission" />
+            <TextView
+                android:id="@+id/sourceInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.35" />
 
-        <Button
-            android:id="@+id/sourceButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/diag_source_toggle" />
-
-        <TextView
-            android:id="@+id/sourceInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textSize="13sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/last_reading_label"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/lastReading"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="#EEEEEE"
-            android:minHeight="120dp"
-            android:padding="16dp"
-            android:textIsSelectable="true"
-            android:textSize="16sp" />
-
-        <Button
-            android:id="@+id/refreshButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/refresh" />
-    </LinearLayout>
-</ScrollView>
+            <!-- Última leitura -->
+            <LinearLayout style="@style/DiagCard" android:orientation="vertical" android:layout_marginTop="12dp">
+                <TextView style="@style/TextCaps" android:textSize="11sp"
+                    android:text="@string/last_reading_label" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/lastCode" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:fontFamily="monospace" android:textFontWeight="600"
+                    android:textSize="18sp" android:textColor="@color/elatech_navy_deep" />
+                <TextView android:id="@+id/lastMeta" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:textColor="@color/on_surface_variant" android:textSize="14sp" android:layout_marginBottom="8dp" />
+                <TextView android:id="@+id/lastDump" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:background="@color/dump_bg" android:padding="10dp" android:fontFamily="monospace"
+                    android:textSize="12sp" android:textColor="@color/dump_fg" android:lineSpacingMultiplier="1.5"
+                    android:textIsSelectable="true" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

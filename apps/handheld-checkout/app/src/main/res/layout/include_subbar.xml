@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="@color/elatech_navy"
+    android:paddingEnd="4dp">
+
+    <ImageButton
+        android:id="@+id/subbarBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_arrow_left"
+        app:tint="#FFFFFF"
+        android:scaleType="center"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@android:string/cancel" />
+
+    <ImageView
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_marginEnd="6dp"
+        android:src="@drawable/ic_elatech_mark"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/brand"
+            android:textAllCaps="true"
+            android:textColor="@color/elatech_orange_soft"
+            android:textFontWeight="600"
+            android:textSize="10sp"
+            android:letterSpacing="0.16"
+            android:includeFontPadding="false" />
+
+        <TextView
+            android:id="@+id/subbarTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/barlow_condensed"
+            android:textFontWeight="600"
+            android:textSize="19sp"
+            android:textColor="#FFFFFF"
+            android:includeFontPadding="false" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/subbarBadge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="@color/elatech_orange"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="5dp"
+        android:text="@string/settings_dirty"
+        android:textAllCaps="true"
+        android:textColor="@color/elatech_navy_deep"
+        android:textFontWeight="600"
+        android:textSize="12sp"
+        android:letterSpacing="0.06"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/subbarAction"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_refresh"
+        app:tint="#FFFFFF"
+        android:scaleType="center"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/refresh"
+        android:visibility="gone" />
+</LinearLayout>

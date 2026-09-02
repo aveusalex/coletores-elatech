@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/surface">
+
+    <LinearLayout
+        android:id="@+id/saleHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="72dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:background="?attr/selectableItemBackground">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/saleId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:textFontWeight="600"
+                android:textSize="16sp"
+                android:textColor="@color/elatech_navy_deep" />
+
+            <TextView
+                android:id="@+id/saleMeta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/on_surface_variant"
+                android:textSize="14sp"
+                android:fontFeatureSettings="tnum" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/saleTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:fontFamily="@font/barlow_condensed"
+            android:textFontWeight="600"
+            android:textSize="20sp"
+            android:textColor="@color/on_surface"
+            android:fontFeatureSettings="tnum" />
+
+        <ImageView
+            android:id="@+id/saleChevron"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_chevron_down"
+            app:tint="@color/elatech_navy"
+            android:contentDescription="@null" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/saleLines"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/n50"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp"
+        android:visibility="gone" />
+
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" />
+</LinearLayout>

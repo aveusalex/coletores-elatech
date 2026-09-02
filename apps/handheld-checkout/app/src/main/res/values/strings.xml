@@ -1,64 +1,105 @@
 <resources>
     <string name="app_name">Checkout Lab</string>
+    <string name="brand">Elatech</string>
+    <string name="brand_caps">Elatech</string>
 
     <!-- Checkout -->
-    <string name="checkout_title">Checkout Lab</string>
-    <string name="checkout_subtitle">Venda simulada offline. Sem ERP, pagamento, rede ou dados reais.</string>
+    <string name="checkout_title">Checkout</string>
     <string name="checkout_total_label">Total</string>
-    <string name="checkout_items_label">%1$d itens</string>
+    <string name="checkout_items_one">1 item</string>
+    <string name="checkout_items_many">%1$d itens</string>
+    <string name="checkout_empty_title">Bipe um produto</string>
+    <string name="checkout_empty_hint">Use o gatilho do coletor. O item entra na lista e o total atualiza na hora.</string>
+    <string name="checkout_empty_brand">Elatech · Operações Inteligentes</string>
     <string name="checkout_empty">Carrinho vazio. Bipe um produto.</string>
     <string name="checkout_finish">Finalizar venda</string>
     <string name="checkout_clear">Limpar</string>
     <string name="checkout_open_diagnostic">Diagnóstico</string>
-    <string name="checkout_open_settings">Ajustes do scanner</string>
+    <string name="checkout_open_settings">Ajustes</string>
     <string name="checkout_open_history">Histórico</string>
-    <string name="checkout_line_qty">Qtd: %1$d</string>
+    <string name="checkout_line_qty">Qtd: %1$d · %2$s</string>
     <string name="checkout_remove">Remover</string>
+    <string name="checkout_dec">Diminuir quantidade de %1$s</string>
+    <string name="checkout_inc">Aumentar quantidade de %1$s</string>
+    <string name="checkout_remove_cd">Remover %1$s do carrinho</string>
     <string name="checkout_outcome_added">Adicionado: %1$s</string>
     <string name="checkout_outcome_incremented">%1$s — qtd %2$d</string>
     <string name="checkout_outcome_unknown">Código desconhecido: %1$s</string>
     <string name="checkout_outcome_none">Aguardando leitura…</string>
     <string name="checkout_sale_done">Venda %1$s registrada · %2$s</string>
+    <string name="checkout_total_cd">Total %1$s, %2$s</string>
+    <string name="menu_more">Mais opções</string>
 
-    <!-- Diálogo de cadastro de produto fictício -->
+    <!-- Cadastro de produto fictício (bottom sheet) -->
     <string name="unknown_title">Cadastrar produto fictício</string>
-    <string name="unknown_code">Código: %1$s</string>
+    <string name="unknown_code_label">Código lido</string>
     <string name="unknown_name_hint">Nome do produto</string>
-    <string name="unknown_price_hint">Preço em centavos (ex.: 590)</string>
+    <string name="unknown_name_placeholder">Ex.: Caixa de parafusos M6</string>
+    <string name="unknown_price_hint">Preço</string>
+    <string name="unknown_price_help">Máscara pt-BR; guardado em centavos</string>
     <string name="unknown_add">Cadastrar e adicionar</string>
     <string name="unknown_cancel">Cancelar</string>
-
-    <!-- Diagnóstico -->
-    <string name="diag_title">Diagnóstico do scanner</string>
-    <string name="diag_subtitle">Este app não consulta produtos, não usa internet e não processa vendas.</string>
-    <string name="diag_version_label">v1.0.0 · diagnóstico alterna Broadcast/SDK</string>
-    <string name="diag_contract">Fonte: BroadcastScannerSource\nAção: com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST\nDado: EXTRA_BARCODE_DECODING_DATA · Simbologia: EXTRA_BARCODE_DECODING_SYMBOLE\nRegistro em runtime (RECEIVER_EXPORTED)</string>
-    <string name="permission_granted">Permissão configurada no broadcast: concedida</string>
-    <string name="permission_pending">Permissão configurada no broadcast: pendente</string>
-    <string name="request_permission">Autorizar permissão do broadcast</string>
-    <string name="last_reading_label">Última leitura recebida</string>
-    <string name="no_reading_yet">Nenhum evento recebido ainda.</string>
-    <string name="empty_value">(valor vazio)</string>
-    <string name="last_reading_template">Código: %1$s\nSimbologia: %2$s\nHora: %3$s\n\nExtras:\n%4$s</string>
-    <string name="refresh">Atualizar tela</string>
-    <string name="diag_source_toggle">Trocar fonte (Broadcast / SDK)</string>
-    <string name="diag_source_info">Fonte: %1$s · %2$s</string>
+    <string name="unknown_err_name">Informe o nome do produto</string>
+    <string name="unknown_err_price">Preço deve ser maior que zero</string>
 
     <!-- Ajustes do scanner -->
     <string name="settings_title">Ajustes do scanner</string>
-    <string name="settings_note">Aplica via SDK, na configuração global do coletor (ADR 0002). Alvo: coletor dedicado ao checkout.</string>
+    <string name="settings_note">Aplica na configuração global do coletor.</string>
+    <string name="settings_dirty">Não salvo</string>
     <string name="settings_beep">Aviso sonoro</string>
-    <string name="settings_volume">Volume: %1$d%%</string>
+    <string name="settings_volume">Volume</string>
+    <string name="settings_volume_pct">%1$d %%</string>
     <string name="settings_trigger">Modo de gatilho</string>
     <string name="settings_suffix">Sufixo</string>
     <string name="settings_output">Saída de dados</string>
     <string name="settings_symbologies">Simbologias</string>
     <string name="settings_save">Salvar e aplicar</string>
     <string name="settings_saved">Ajustes aplicados</string>
-    <string name="settings_service">Serviço: %1$s</string>
+    <string name="settings_apply_failed">Falha ao aplicar</string>
+    <string name="settings_retry">Tentar</string>
+    <string name="settings_service_ok">Serviço: %1$s · compatível</string>
+    <string name="settings_service_bad_title">Serviço incompatível</string>
+    <string name="settings_service_bad_body">%1$s — atualize o serviço do coletor antes de aplicar.</string>
+    <string name="settings_mute_note">Alterado · o bip visual passa a ser a única confirmação</string>
 
     <!-- Histórico de vendas -->
     <string name="history_title">Histórico de vendas</string>
-    <string name="history_empty">Nenhuma venda registrada.</string>
-    <string name="history_row">%1$s · %2$s · %3$d itens · %4$s</string>
+    <string name="history_empty_title">Nenhuma venda registrada</string>
+    <string name="history_empty_hint">As vendas finalizadas neste coletor aparecem aqui.</string>
+    <string name="history_summary_count">%1$d vendas hoje</string>
+    <string name="history_summary_count_one">1 venda hoje</string>
+    <string name="history_row_meta">%1$s · %2$d itens</string>
+    <string name="history_line">%1$d × %2$s</string>
+
+    <!-- Diagnóstico -->
+    <string name="diag_title">Diagnóstico</string>
+    <string name="diag_perm_label">Permissão do broadcast</string>
+    <string name="diag_contract_label">Contrato</string>
+    <string name="permission_granted">Concedida</string>
+    <string name="permission_pending">Pendente</string>
+    <string name="request_permission">Autorizar permissão do broadcast</string>
+    <string name="diag_contract">com.xcheng.scanner.action.BARCODE_DECODING_BROADCAST\nextra: EXTRA_BARCODE_DECODING_DATA · EXTRA_BARCODE_DECODING_SYMBOLE</string>
+    <string name="diag_source_toggle">Trocar fonte (Broadcast / SDK)</string>
+    <string name="diag_source_info">Fonte: %1$s · %2$s</string>
+    <string name="last_reading_label">Última leitura recebida</string>
+    <string name="last_reading_meta">%1$s · %2$s</string>
+    <string name="no_reading_yet">Nenhum evento recebido ainda.</string>
+    <string name="empty_value">(valor vazio)</string>
+    <string name="refresh">Atualizar</string>
+
+    <!-- Enums do scanner (rótulos pt-BR) -->
+    <string name="beep_mute">Mudo</string>
+    <string name="beep_sound">Som</string>
+    <string name="beep_vibrate">Vibração</string>
+    <string name="beep_sound_vibrate">Som + vibração</string>
+    <string name="trigger_single">Único (single)</string>
+    <string name="trigger_continuous">Contínuo</string>
+    <string name="trigger_pulse">Pulso</string>
+    <string name="suffix_none">Nenhum</string>
+    <string name="suffix_enter">Enter</string>
+    <string name="suffix_tab">Tab</string>
+    <string name="suffix_newline">Nova linha</string>
+    <string name="output_broadcast_only">Só broadcast</string>
+    <string name="output_broadcast_keyboard">Broadcast + teclado</string>
+    <string name="output_broadcast_clipboard">Broadcast + área de transferência</string>
 </resources>
