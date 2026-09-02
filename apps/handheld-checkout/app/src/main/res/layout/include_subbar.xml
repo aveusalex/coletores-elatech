@@ -22,7 +22,7 @@
         android:layout_width="22dp"
         android:layout_height="22dp"
         android:layout_marginEnd="6dp"
-        android:src="@drawable/ic_elatech_mark"
+        android:src="@drawable/ic_elatech_logo"
         android:contentDescription="@null" />
 
     <LinearLayout
