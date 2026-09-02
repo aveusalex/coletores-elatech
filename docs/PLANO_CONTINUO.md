@@ -48,8 +48,9 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ✅ done · 🔒 AUTORIZADO · aar vendorado: `xcscanner_qrcode_v1.3.56.1.14`, commit fixo, SHA-256 → `app/libs/PROVENANCE.md`. │
 │ ✅ done · `SdkScannerSource`: bind do serviço OK, `getSdkVersion=1.3.56.1.14`, `applyConfig` aplicado (serviço respondeu). │
 │ ✅ done · Toggle Broadcast/SDK na tela de diagnóstico. │
-│ ⏳ pending · Provar entrega por callback (`onResult`) com bip físico. `getServiceVersion` reconsultar (veio vazio no init). │
-│ ⏳ pending · Migrar `MainActivity` (checkout) p/ `SdkScannerSource` após a prova. │
+│ ✅ done · Entrega por callback provada: `onResult sym=EAN-13` `7896445490550`. │
+│ ✅ done · Versões: `sdk=1.3.56.1.14 service=1.3.62.1.4 match=true`. │
+│ ✅ done · Checkout (`MainActivity`) migrado p/ `SdkScannerSource` + `CHECKOUT_DEFAULT` (saída broadcast puro → sem `_INPUT`). │
 │ ⚠️ nota · Config do scanner é device-global. Deploy alvo = coletor dedicado (kiosk). │
 ╰───────────────────────────────────────────────╯
 
@@ -74,7 +75,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ⏳ pending · Autorizar explicitamente qualquer conexão externa. │
 ╰────────────────────────────────────────────────────╯
 
-[████████████░] ~88%
+[████████████▓] ~90%
 
 ## Sequência detalhada
 
@@ -165,6 +166,7 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 | 2026-09-01 | 3 | Um bip = um evento confirmado (v0.4.0). Caminho morto (`android.intent.scanResult`/`scanKey`) removido do código: `ScanResultReceiver` e o `<receiver>` do manifesto apagados; `ScannerContract` só com a ação real (v0.4.1). Decisão de arquitetura registrada em **ADR 0002**. | Broadcast em runtime atende à Fase 4. Decisão: broadcast agora atrás de uma costura; **XCScanner SDK no produto** (config reproduzível, controle de gatilho/modos, desliga saída teclado). Campos do Barcode Utility: ficam como estão (inertes), sem reversão — sem impacto. | Caminho `_INPUT` ainda injeta texto em campo com foco → tratar na Fase 4 (sem EditText focado na tela de bipagem) ou mudar saída p/ broadcast puro com autorização. | `apps/handheld-checkout/**`, `docs/adr/0002-*`, `scanner/integracao-xcscanner.md`, `apps/handheld-checkout/README.md`, este plano. | Iniciar Fase 3.5 (costura `ScannerSource`) e Fase 4 (catálogo/carrinho). |
 | 2026-09-01 | 3.5/4 | Costura `ScannerSource` + `BroadcastScannerSource` (v0.5.0). Domínio da Fase 4: `Money` (centavos), `Product`, `Cart`, `Catalog`, `Sale`, `CheckoutController` (debounce 400ms). Tela de checkout (`MainActivity`) + diagnóstico movido p/ `DiagnosticActivity` (v0.6.0). 7 testes JVM verdes. Fluxo validado no aparelho por `am broadcast` simulando a ação real: bip conhecido soma correto (R$5,75 = 2,50+3,25), repetido incrementa (Café qtd 2 = R$37,80), desconhecido abre cadastro. | Deploy alvo = coletor dedicado (kiosk). `applyConfig` no broadcast é no-op (só o SDK aplica). `am broadcast` de teste exige receiver runtime + `RECEIVER_EXPORTED` (é o caso). Screenshot de finalizar venda ficou bloqueado por timeout de tela do aparelho; coberto por teste JVM. | `apps/handheld-checkout/**` (scanner/, domain/, checkout/, layouts, testes), este plano. | Room (persistir catálogo/vendas) + trazer SDK sob autorização. |
 | 2026-09-01 | 3.5 | Usuário autorizou o SDK. aar `xcscanner_qrcode_v1.3.56.1.14-release.aar` vendorada em `app/libs/` (commit `2f813e4` do ramo `movfast`, SHA-256 `ae1aba41…`, Apache-2.0, procedência em `PROVENANCE.md`). `SdkScannerSource` implementa `ScannerSource` via `com.xcheng.scanner.XcBarcodeScanner`: `init`/`deInit`, callback `ScannerSymResult`, `applyConfig` mapeando `ScannerConfig` p/ `setOutputMethod`/`setSuccessNotification`/`setScanVolume`/`setScanMode`/`setTextSuffix`/`enableBarcodeType`/`saveSettings`. Toggle Broadcast↔SDK na tela de diagnóstico (v0.7.0). | No aparelho: `init` OK, `getSdkVersion=1.3.56.1.14`, `applyConfig ok` e o serviço `XCScanner` respondeu (`configDecoderTag`). `getServiceVersion()` veio vazio logo após `init` (timing — reconsultar). Build + 7 testes verdes. | Falta bip físico p/ provar `onResult`. Checkout ainda usa Broadcast. Timeout de tela do coletor atrapalha screenshots. | `apps/handheld-checkout/app/libs/**`, `scanner/SdkScannerSource.kt`, `DiagnosticActivity`, `build.gradle.kts`, `docs/adr/0002-*`, este plano. | Provar entrega SDK por bip; migrar checkout p/ SDK; Room. |
+| 2026-09-01 | 3.5 | Entrega do SDK provada no aparelho (via toggle na tela de diagnóstico): `onResult sym=EAN-13` código `7896445490550`. `getServiceVersion` reconsultado = `1.3.62.1.4`; `sdk=1.3.56.1.14` → `match=true`. Checkout (`MainActivity`) migrado p/ `SdkScannerSource`; `CheckoutController.attach` aplica `CHECKOUT_DEFAULT` (saída `BROADCAST_ONLY` → mata o `_INPUT`). v0.8.0. Build + 7 testes verdes. | `svc power stayon true` usado p/ contornar o timeout de tela do coletor durante o teste (reverter). Fase 3.5 concluída. | Reverter `stayon`. Migrar `Catalog`/`SaleHistory` p/ Room. Persistir `ScannerConfig` + tela de ajustes. | `MainActivity`, `CheckoutController`, `SdkScannerSource`, `build.gradle.kts`, `docs/adr/0002-*`, este plano. | Fase 4 — Room. |
 
 ## Regras de avanço
 
