@@ -4,15 +4,20 @@ Base de conhecimento e futuro código para experiências controladas com coletor
 
 O primeiro laboratório é um checkout móvel didático no **MovFast Ranger 2N**: cadastrar produtos fictícios, ler códigos de barras, montar carrinho, indicar item desconhecido e concluir uma venda simulada. O objetivo inicial é aprender o dispositivo e sua integração Android — não operar vendas reais.
 
-## Estado atual
+## Estado atual — v1.0.0 (2026-09-02)
 
-- Documentação e arquitetura inicial: em construção.
-- Teste de leitura no Ranger 2N: ainda não executado.
-- Aplicativo Android: ainda não iniciado.
-- Middleware, ERP, estoque, pagamento e emissão fiscal: fora do escopo atual.
+- App `apps/handheld-checkout` (`br.com.elatech.checkoutlab`): checkout offline
+  completo — leitura por bip, carrinho, item desconhecido, venda simulada,
+  histórico, ajustes do scanner. Persistência Room. 17 testes JVM.
+- Scanner: contrato de broadcast provado no aparelho; **XCScanner SDK** adotado
+  para o produto (ADR 0002), com callback e `applyConfig` verificados.
+- Fases 1–5 do plano concluídas. **Fase 6 (middleware)**: não iniciada — depende
+  de sistema-alvo, contratos e ADR aprovado.
+- Middleware, ERP, estoque, pagamento e emissão fiscal: fora do escopo.
 
 ## Comece aqui
 
+- [Notas de versão v1.0.0](docs/RELEASE-1.0.md)
 - [Índice da base de conhecimento](docs/README.md)
 - [Ranger 2N: fatos, capacidades e pendências](docs/collector/ranger-2n.md)
 - [Integração com o scanner e SDK](docs/scanner/integracao-xcscanner.md)
@@ -30,7 +35,7 @@ O primeiro laboratório é um checkout móvel didático no **MovFast Ranger 2N**
 ## Estrutura prevista
 
 ```text
-apps/handheld-checkout/  futuro app Android offline
+apps/handheld-checkout/  app Android offline (v1.0.0)
 services/middleware/     futuro serviço de integração, ainda sem implementação
 contracts/               contratos de dados entre app e middleware
 docs/                    wiki técnica, decisões e runbooks

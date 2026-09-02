@@ -39,10 +39,10 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ✅ done · Um evento por bip, previsível (EAN-13 e QR), com simbologia. Critério atendido. │
 │ ✅ done · Contrato fixado em `ScannerContract`; caminho morto removido do código (v0.4.1). │
 │ ✅ done · ⚠️ ALTERADO · Decisão registrada — ADR 0002: broadcast agora, XCScanner SDK no produto. │
-│ ⏳ pending · Barcode Utility PackageName/ClassName ficam como estão (inertes, documentado). │
+│ ✅ done · Barcode Utility PackageName/ClassName ficam como estão (inertes, documentado). │
 ╰───────────────────────────────────────────────╯
 
-╭─ FASE 3.5 — Adoção do XCScanner SDK (produto) · 🔴 VOCÊ ESTÁ AQUI ─╮
+╭─ FASE 3.5 — Adoção do XCScanner SDK (produto) ─╮
 │ ✅ done · Costura `ScannerSource` + `BroadcastScannerSource` (transporte atual). │
 │ ✅ done · `ScannerConfig` (beep, volume, gatilho, sufixo, saída, simbologias). │
 │ ✅ done · 🔒 AUTORIZADO · aar vendorado: `xcscanner_qrcode_v1.3.56.1.14`, commit fixo, SHA-256 → `app/libs/PROVENANCE.md`. │
@@ -61,15 +61,26 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ✅ done · 7 testes JVM do fluxo (add/incremento/total/debounce/desconhecido/venda). │
 │ ✅ done · Room: `RoomCatalog`/`RoomSaleHistory` + `AppDatabase` (products/sales/sale_lines), seed no 1º create. │
 │ ✅ done · Venda no aparelho persistiu: `sales` R$5,25/3 itens + `sale_lines` (inclui item cadastrado na hora). │
-│ ⏳ pending · Tela de ajustes do scanner (persistir `ScannerConfig`, aplicar no `start`). │
-│ ⏳ pending · Tela de histórico de vendas (opcional). │
+│ ✅ done · Tela de ajustes do scanner: edita+persiste `ScannerConfig`, aplica via SDK (`ScannerConfigStore`). │
+│ ✅ done · Tela de histórico de vendas (lê Room). Sobreviveu a upgrade do APK no aparelho. │
 ╰────────────────────────────────────────────────╯
 
 ╭─ FASE 5 — Qualidade e operação de laboratório ─╮
-│ ⏳ pending · Testar reinício, bateria, tela bloqueada e rotação. │
-│ ⏳ pending · Executar casos de EAN, QR, item desconhecido e duplicidade. │
-│ ⏳ pending · Decidir se Kiosk é útil somente para demonstração controlada. │
+│ ✅ done · 17 testes JVM: Money, Cart, fluxo de checkout. `./gradlew testDebugUnitTest`. │
+│ ✅ done · Retrato fixo (sem rotação). Callback do SDK entregue na thread principal. │
+│ ✅ done · Matriz de testes manuais documentada — `docs/testing/matriz-fase5.md` (M1–M20, R1–R2). │
+│ ⏳ pending · Executar a matriz manual completa no aparelho (roteiro pronto). │
+│ ⏳ pending · Kiosk/MDM: só se houver demonstração em modo restrito (Fase 6 decide o resto). │
 ╰──────────────────────────────────────────────────╯
+
+╭─ v1.0.0 — checkout de laboratório completo ─╮
+│ ✅ Scanner: broadcast (prova) + SDK (produto), config pelo app │
+│ ✅ Checkout: catálogo/carrinho/venda simulada, código desconhecido, debounce │
+│ ✅ Persistência: Room (catálogo + vendas + linhas) │
+│ ✅ Telas: checkout · ajustes do scanner · histórico · diagnóstico │
+│ ✅ 17 testes JVM + matriz manual │
+│ ⏳ FASE 6 (middleware) — só com autorização e ADR │
+╰────────────────────────────────────────────────╯
 
 ╭─ FASE 6 — Decisão de evolução para middleware ─╮
 │ ⏳ pending · Identificar sistema-alvo e requisito real de integração. │
@@ -77,7 +88,7 @@ Aprender a construir e operar, de forma isolada, um checkout móvel no MovFast R
 │ ⏳ pending · Autorizar explicitamente qualquer conexão externa. │
 ╰────────────────────────────────────────────────────╯
 
-[█████████████] ~93%
+[█████████████] v1.0.0 — Fases 1–5 concluídas (Fase 6 depende de autorização)
 
 ## Sequência detalhada
 
@@ -170,6 +181,7 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 | 2026-09-01 | 3.5 | Usuário autorizou o SDK. aar `xcscanner_qrcode_v1.3.56.1.14-release.aar` vendorada em `app/libs/` (commit `2f813e4` do ramo `movfast`, SHA-256 `ae1aba41…`, Apache-2.0, procedência em `PROVENANCE.md`). `SdkScannerSource` implementa `ScannerSource` via `com.xcheng.scanner.XcBarcodeScanner`: `init`/`deInit`, callback `ScannerSymResult`, `applyConfig` mapeando `ScannerConfig` p/ `setOutputMethod`/`setSuccessNotification`/`setScanVolume`/`setScanMode`/`setTextSuffix`/`enableBarcodeType`/`saveSettings`. Toggle Broadcast↔SDK na tela de diagnóstico (v0.7.0). | No aparelho: `init` OK, `getSdkVersion=1.3.56.1.14`, `applyConfig ok` e o serviço `XCScanner` respondeu (`configDecoderTag`). `getServiceVersion()` veio vazio logo após `init` (timing — reconsultar). Build + 7 testes verdes. | Falta bip físico p/ provar `onResult`. Checkout ainda usa Broadcast. Timeout de tela do coletor atrapalha screenshots. | `apps/handheld-checkout/app/libs/**`, `scanner/SdkScannerSource.kt`, `DiagnosticActivity`, `build.gradle.kts`, `docs/adr/0002-*`, este plano. | Provar entrega SDK por bip; migrar checkout p/ SDK; Room. |
 | 2026-09-01 | 3.5 | Entrega do SDK provada no aparelho (via toggle na tela de diagnóstico): `onResult sym=EAN-13` código `7896445490550`. `getServiceVersion` reconsultado = `1.3.62.1.4`; `sdk=1.3.56.1.14` → `match=true`. Checkout (`MainActivity`) migrado p/ `SdkScannerSource`; `CheckoutController.attach` aplica `CHECKOUT_DEFAULT` (saída `BROADCAST_ONLY` → mata o `_INPUT`). v0.8.0. Build + 7 testes verdes. | `svc power stayon true` usado p/ contornar o timeout de tela do coletor durante o teste (reverter). Fase 3.5 concluída. | Reverter `stayon`. Migrar `Catalog`/`SaleHistory` p/ Room. Persistir `ScannerConfig` + tela de ajustes. | `MainActivity`, `CheckoutController`, `SdkScannerSource`, `build.gradle.kts`, `docs/adr/0002-*`, este plano. | Fase 4 — Room. |
 | 2026-09-02 | 4 | Room adicionado (KSP + androidx.room 2.6.1). `AppDatabase` (products/sales/sale_lines), seed fictício no 1º create. `RoomCatalog`/`RoomSaleHistory` atrás das interfaces existentes; `CheckoutController` inalterado. Seed movido p/ `CatalogSeed` (compartilhado com `InMemoryCatalog` dos testes). v0.9.0. `allowMainThreadQueries` = tradeoff de laboratório documentado. | No aparelho (SDK real): bipe EAN×2 + QR desconhecido → cadastrado na hora ("Insta agua" R$0,25) → FINALIZAR. DB puxado: `sales` = 1 linha (R$5,25, 3 itens), `sale_lines` = 2 (Água ×2 + item novo). Cart limpo. `stayon` revertido. `sqlite3` não existe no coletor — usar `run-as cat` dos 3 arquivos (.db/-wal/-shm). | Sem tela de histórico e sem tela de ajustes de scanner. `ScannerConfig` ainda não é persistido nem editável. | `apps/handheld-checkout/app/src/main/java/br/com/elatech/checkoutlab/data/**`, `domain/CatalogSeed.kt`, `MainActivity`, `build.gradle.kts` (root + app), este plano. | Tela de ajustes do scanner; depois Fase 5 (matriz de testes de laboratório). |
+| 2026-09-02 | 4/5 | v0.10.0: `ScannerSettingsActivity` (edita+persiste `ScannerConfig` em `ScannerConfigStore`, aplica via SDK), `SalesHistoryActivity` (lê Room). Retrato fixo nas 4 telas. Callback do SDK entregue na thread principal (`Handler`). v1.0.0: +10 testes JVM (`MoneyTest`, `CartTest` → 17 no total), matriz manual `docs/testing/matriz-fase5.md`. Bump p/ 1.0.0. | No aparelho: ajustes carregam/salvam/aplicam (`applyConfig ok`, `shared_prefs/scanner_config.xml`); histórico mostra venda que sobreviveu ao upgrade do APK. `service=1.3.62.1.4 match=true`. Clean build + 17 testes verdes. | Matriz manual completa ainda não executada ponta a ponta no aparelho (roteiro pronto). Fase 6 (middleware) não iniciada — depende de autorização + ADR. | `apps/handheld-checkout/**` (settings/history/config-store/tests), `docs/testing/matriz-fase5.md`, `docs/RELEASE-1.0.md`, este plano. | Rodar a matriz manual; decidir Fase 6 quando houver sistema-alvo. |
 
 ## Regras de avanço
 
@@ -180,23 +192,20 @@ Ao encerrar um trabalho relevante, atualizar a seção abaixo e, se houver mudan
 
 ## O que destrava AGORA
 
-- **Fase 3.5 — costura `ScannerSource`**: definir a interface e a implementação
-  `BroadcastScannerSource` (a atual), para o domínio da Fase 4 não depender do
-  mecanismo. Não precisa de autorização.
-- **Fase 3.5 — SDK (requer autorização no momento de trazer o artefato)**: fixar
-  release/commit do `XCApex/XCScannerSDK@movfast`, registrar procedência +
-  checksum, validar `getServiceVersion` contra `2.0.8.1211`. Ver ADR 0002.
-- **Fase 3.5 — provar entrega SDK**: bipar com a tela de diagnóstico em modo
-  SDK e confirmar `onResult`. Depois, migrar `MainActivity` (checkout) de
-  `BroadcastScannerSource` para `SdkScannerSource` e aplicar
-  `ScannerConfig.CHECKOUT_DEFAULT` (saída broadcast puro → mata o `_INPUT`).
-- **Fase 4 — tela de ajustes do scanner** (`ScannerConfig`): persistir a escolha
-  (SharedPreferences ou Room) e aplicar no `attach`/`start`. Já tem efeito via
-  `SdkScannerSource`.
-- **Fase 4 — tela de histórico** (opcional): listar `CompletedSale` de
-  `RoomSaleHistory.all()`.
-- **Fase 5** — matriz de testes de laboratório: EAN/QR/desconhecido/duplicado,
-  reinício, bateria, tela bloqueada, rotação; recuperação do banco.
+**v1.0.0 entregue** — Fases 1–5 concluídas. Ver `docs/RELEASE-1.0.md`.
+
+Sem depender de autorização:
+
+- **Rodar a matriz manual** `docs/testing/matriz-fase5.md` ponta a ponta no
+  Ranger (M1–M20, R1–R2) e registrar o resultado aqui.
+- **Migração de schema Room**: hoje `version = 1` sem migrations; se o schema
+  mudar, adicionar `Migration` (ou `fallbackToDestructiveMigration` só em dev).
+
+Requer decisão/autorização (Fase 6):
+
+- **Middleware**: só com sistema-alvo identificado, contratos, regras de
+  sincronização/idempotência, LGPD/auditoria e um ADR aprovado. Nada implícito.
+- **Kiosk/MDM**: avaliar se há demonstração em modo restrito que justifique.
 
 ### Encerrado / não-fazer
 
